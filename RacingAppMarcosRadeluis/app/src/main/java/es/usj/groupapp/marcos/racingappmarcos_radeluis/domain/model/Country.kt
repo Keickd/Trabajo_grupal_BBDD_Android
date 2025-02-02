@@ -4,8 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Winner(
+data class Country(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val race_id : Long,
-    val racer_id: Long,
+    val name: String
 )
