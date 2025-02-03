@@ -6,5 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "country")
 data class CountryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String
+    val name: String,
+    val image: String
 )
