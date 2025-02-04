@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "race",
+@Entity(tableName = "races",
     foreignKeys = [
         ForeignKey(
             entity = TrackEntity::class,

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "team",
+@Entity(tableName = "teams",
 foreignKeys = [
     ForeignKey(
     entity = CountryEntity::class,

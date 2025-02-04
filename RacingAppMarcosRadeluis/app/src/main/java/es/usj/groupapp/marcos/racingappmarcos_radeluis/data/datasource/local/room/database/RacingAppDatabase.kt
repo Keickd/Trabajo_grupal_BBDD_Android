@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.CountryEntity
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.ParticipationEntity
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.RacerEntity
@@ -14,7 +15,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.
 @Database(entities = [ CountryEntity::class, ParticipationEntity::class, RacerEntity::class, RaceEntity::class, TrackEntity::class, TeamEntity::class], exportSchema = true, version = 1 )
 abstract class RacingAppDatabase : RoomDatabase() {
 
-//    abstract fun getDao(): MonumentDao
+    abstract fun countryDao(): CountryDao
 
     companion object {
 

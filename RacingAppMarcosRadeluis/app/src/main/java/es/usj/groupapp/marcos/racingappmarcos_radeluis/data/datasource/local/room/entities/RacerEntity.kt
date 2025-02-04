@@ -4,8 +4,14 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "track",
+@Entity(tableName = "racers",
     foreignKeys = [
+        ForeignKey(
+        entity = TeamEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["team_id"],
+        onDelete = ForeignKey.SET_NULL
+         ),
         ForeignKey(
             entity = CountryEntity::class,
             parentColumns = ["id"],
@@ -14,9 +20,10 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class TrackEntity(
+data class RacerEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val country_id: Long,
-    val distance: Double,
+    val age: Int,
+    val team_id: Long
 )
