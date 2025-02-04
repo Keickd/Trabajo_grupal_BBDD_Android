@@ -13,6 +13,9 @@ interface CountryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCountry(countryEntity: CountryEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCountries(countries: List<CountryEntity>)
+
     @Query("Select * FROM countries")
     fun getAllCountries(): Flow<List<CountryEntity>>
 

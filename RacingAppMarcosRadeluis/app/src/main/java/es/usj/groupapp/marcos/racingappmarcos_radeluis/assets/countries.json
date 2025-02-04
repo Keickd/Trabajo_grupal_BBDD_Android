@@ -1,0 +1,9 @@
+[
+  { "name": "Spain", "image": "flags/es.svg" },
+  { "name": "United States", "image": "flags/us.svg" },
+  { "name": "France", "image": "flags/fr.svg" },
+  { "name": "Great Britain", "image": "flags/gb.svg" },
+  { "name": "Italy", "image": "flags/it.svg" },
+  { "name": "Norway", "image": "flags/no.svg" },
+  { "name": "Portugal", "image": "flags/pt.svg" }
+]

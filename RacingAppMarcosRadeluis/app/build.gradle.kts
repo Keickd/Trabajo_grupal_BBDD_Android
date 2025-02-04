@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-}
+    //id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.kapt)}
 
 android {
     namespace = "es.usj.groupapp.marcos.racingappmarcos_radeluis"
@@ -35,6 +36,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xuse-k2"
     }
     buildFeatures {
         compose = true
@@ -50,14 +52,23 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.rxjava2)
     implementation(libs.androidx.room.rxjava3)
     implementation(libs.androidx.room.guava)
     testImplementation(libs.androidx.room.testing)
     implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.runtime.v250)
+
+    kapt(libs.artifactid)
+    kapt(libs.androidx.room.compiler.v261)
+
+    implementation(libs.gson)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -73,4 +84,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(kotlin("script-runtime"))
 }
