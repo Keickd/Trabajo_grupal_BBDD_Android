@@ -1,10 +1,12 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Index
 
-@Entity(tableName = "participations",
+@Entity(
+    tableName = "participations",
     foreignKeys = [
         ForeignKey(
             entity = RacerEntity::class,
@@ -18,11 +20,15 @@ import androidx.room.PrimaryKey
             childColumns = ["race_id"],
             onDelete = ForeignKey.SET_NULL
         )
+    ],
+    indices = [
+        Index(value = ["racer_id"]),
+        Index(value = ["race_id"])
     ]
 )
 data class ParticipationEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val track_id: Long,
+    val race_id: Long,
     val racer_id: Long,
     val ranking: Int,
     val best_time: Long

@@ -1,36 +1,38 @@
 [versions]
-agp = "8.5.2"
-artifactid = "version"
-coilSvg = "2.2.2"
+agp = "8.6.1"
+coilCompose = "3.0.4"
+coilComposeVersion = "2.5.0"
 gson = "2.11.0"
-kotlin = "1.9.0"
+kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2024.04.01"
+composeBom = "2025.01.01"
+navigationVersion = "2.8.6"
+jsonKotlinSerialization = "1.7.3"
+retrofit = "2.11.0"
+coil = "3.0.4"
+datastorePreferences = "1.1.2"
+room = "2.6.1"
+kspVersion = "2.1.0-1.0.29"
 roomCompiler = "2.6.1"
+roomCompilerVersion = "2.6.1"
+roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
-kaptVersion = "2.1.10"
-roomRuntimeVersion = "2.5.0"
+symbolProcessingApi = "2.1.10"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntimeVersion" }
-androidx-room-compiler-v261 = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
-androidx-room-guava = { module = "androidx.room:room-guava", version.ref = "roomRuntime" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
-androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomRuntime" }
+#noinspection SimilarGradleDependency
+androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
+#noinspection SimilarGradleDependency
+androidx-room-ktx-v250 = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
-androidx-room-runtime-v250 = { module = "androidx.room:room-runtime", version.ref = "roomRuntimeVersion" }
-androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "roomRuntime" }
-androidx-room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRuntime" }
-androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomRuntime" }
-artifactid = { module = "groupId:artifactId", version.ref = "artifactid" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilSvg" }
-coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilSvg" }
+coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilComposeVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -45,11 +47,23 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVersion"}
+navigationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "jsonKotlinSerialization"}
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
+retrofit-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit"}
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+#noinspection SimilarGradleDependency
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
+#noinspection SimilarGradleDependency
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "symbolProcessingApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kaptVersion" }
-
-
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 

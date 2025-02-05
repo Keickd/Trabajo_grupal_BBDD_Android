@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.OnConflictStrategy.Companion.IGNORE
 import androidx.room.Query
 import androidx.room.Update
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.ParticipationEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.ParticipationEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

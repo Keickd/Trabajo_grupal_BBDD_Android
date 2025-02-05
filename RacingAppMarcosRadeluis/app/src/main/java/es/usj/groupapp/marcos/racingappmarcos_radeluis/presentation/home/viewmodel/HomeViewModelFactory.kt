@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.CountryLocalDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.mapper.CountryMapper
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.database.RacingAppDatabase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.CountryRepository
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.InsertAndLoadCountriesUseCase
 
 class HomeViewModelFactory(

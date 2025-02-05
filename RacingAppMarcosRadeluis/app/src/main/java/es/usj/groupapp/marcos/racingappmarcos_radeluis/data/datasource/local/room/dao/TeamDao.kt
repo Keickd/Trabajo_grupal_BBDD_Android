@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.IGNORE
 import androidx.room.Query
 import androidx.room.Update
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.TeamEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TeamEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,7 +16,7 @@ interface TeamDao {
     @Query("Select * FROM teams")
     fun getAllTeams(): Flow<List<TeamEntity>>
 
-    @Query("Select * FROM racers where id = :id")
+    @Query("Select * FROM teams where id = :id")
     suspend fun getTeamById(id: Long): TeamEntity
 
     @Update(onConflict = IGNORE)
