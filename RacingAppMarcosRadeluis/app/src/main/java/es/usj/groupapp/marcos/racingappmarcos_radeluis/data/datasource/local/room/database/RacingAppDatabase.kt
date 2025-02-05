@@ -1,34 +1,40 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.database
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.DateMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.CountryEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.ParticipationEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.RacerEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.RaceEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.TrackEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.TeamEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.ParticipationEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RacerEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RaceEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TrackEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TeamEntity
 
-@Database(entities = [ CountryEntity::class, ParticipationEntity::class, RacerEntity::class, RaceEntity::class, TrackEntity::class, TeamEntity::class], exportSchema = true, version = 1 )
+@Database(entities = [ CountryEntity::class, ParticipationEntity::class, RacerEntity::class, RaceEntity::class, TrackEntity::class, TeamEntity::class], exportSchema = false, version = 1 )
+@TypeConverters(DateMapper::class)
 abstract class RacingAppDatabase : RoomDatabase() {
 
     abstract fun countryDao(): CountryDao
 
     companion object {
-
-        var db: RacingAppDatabase? = null
+        @Volatile
+        private var INSTANCE: RacingAppDatabase? = null
 
         fun provideDatabase(application: Context): RacingAppDatabase {
-            if (db == null) {
-                db = Room.databaseBuilder(
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
                     application,
                     RacingAppDatabase::class.java, "RacingAppDb.db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                instance
             }
-            return db!!
         }
     }
 }

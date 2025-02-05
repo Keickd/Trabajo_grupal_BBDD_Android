@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CountryDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCountry(countryEntity: CountryEntity)
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCountries(countries: List<CountryEntity>)
 

@@ -2,8 +2,8 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.ParticipationEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.RacerEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.ParticipationEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RacerEntity
 
 data class RacerWithParticipations(
     @Embedded val racerEntity: RacerEntity,
