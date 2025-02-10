@@ -25,6 +25,7 @@ class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoadCoun
             try {
                 countryList = insertAndLoadCountriesUseCase.insertAndLoadCountries()
             } catch (e: Exception) {
+                print(e.message)
                 homeDataMutableStateFlow.value = HomeState.Failure(Throwable("Failed to load countries"))
             }
         }
