@@ -1,6 +1,7 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.mapper.CountryMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
@@ -16,7 +17,9 @@ class CountryLocalDataSource(
 ) {
 
     suspend fun insertAndGetCountriesFromJSON(): List<Country> {
-        val countriesJson = context.assets.open("flags/countries.json").use { inputStream ->
+        val files = context.assets.list("") ?: emptyArray()
+        Log.d("DEBUG", "Archivos en assets: ${files.joinToString()}")
+        val countriesJson = context.assets.open("countries.json").use { inputStream ->
             InputStreamReader(inputStream).readText()
         }
 
