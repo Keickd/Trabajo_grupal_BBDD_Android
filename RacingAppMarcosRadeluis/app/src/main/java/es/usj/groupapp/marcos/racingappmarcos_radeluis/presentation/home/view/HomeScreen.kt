@@ -1,6 +1,8 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,10 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -32,13 +38,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.room.util.TableInfo
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TrackRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetAllTracksUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -48,27 +60,38 @@ fun HomeScreen(viewModel: HomeViewModel) {
         is HomeState.Loading -> LoadingComposable()
         is HomeState.Failure -> FailureComposable()
         is HomeState.Data -> {
-            val stateValue = state.value
-            if (stateValue is HomeState.Data) {
-                val data = stateValue
+            val data = stateValue
 
-                Column {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding(),
+                    bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+                )
+
+            ) {
+                // Teams
+                item {
                     when (data.teams) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
                         is HomeListState.Success -> TeamsList(data.teams.data)
                     }
+                }
 
+                item {
                     when (data.racers) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
-                        is HomeListState.Success -> FailureComposable()
+                        is HomeListState.Success -> RacersList(data.racers.data)
                     }
+                }
 
+                item {
                     when (data.tracks) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
-                        is HomeListState.Success -> FailureComposable()
+                        is HomeListState.Success -> TracksList(data.tracks.data)
                     }
                 }
             }
@@ -76,14 +99,15 @@ fun HomeScreen(viewModel: HomeViewModel) {
     }
 }
 
-///TEAMS///
+
+//////////////////////////////////////////TEAMS//////////////////////////////////////////
 
 @Composable
 fun TeamsList(teams: List<Team>) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(WindowInsets.systemBars.asPaddingValues())
+            .fillMaxWidth()
+
     ) {
         Text(
             text = "TEAMS",
@@ -94,29 +118,31 @@ fun TeamsList(teams: List<Team>) {
         )
 
         LazyRow(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(20.dp),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 20.dp)
+            ,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(teams) { team ->
-                TeamCard(team = team, modifier = Modifier.padding(end = 16.dp))
-                Spacer(modifier = Modifier.height(16.dp))
+                TeamCard(team = team)
             }
         }
     }
 }
 
 @Composable
-fun TeamCard(team: Team, modifier: Modifier) {
-    Card(
-        modifier = modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.3f)
-    ) {
-        Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+fun TeamCard(team: Team) {
+    Card {
+        Column(modifier = Modifier.align(Alignment.CenterHorizontally)
+            .background(color = Color(0xfffad9dd))
+            .padding(bottom = 20.dp)
+            .width(200.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_background),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
             )
 
@@ -125,19 +151,25 @@ fun TeamCard(team: Team, modifier: Modifier) {
             Text(
                 text = team.name,
                 style = MaterialTheme.typography.bodyLarge,
+                fontSize = 25.sp,
                 modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
                 Text(
                     text = team.country.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                    fontSize = 22.sp,
                 )
+
+                Spacer(modifier = Modifier.width(15.dp))
 
                 FlagImage(
                     flagPath = "flags/${team.country.image}",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(24.dp)
                 )
             }
         }
@@ -151,14 +183,186 @@ fun FlagImage(flagPath: String, modifier: Modifier = Modifier) {
         .components { add(SvgDecoder.Factory()) }
         .build()
 
+
     Image(
-        painter = rememberAsyncImagePainter("asset://$flagPath", imageLoader),
+        painter = rememberAsyncImagePainter("file:///android_asset/$flagPath", imageLoader),
         contentDescription = null,
         modifier = modifier
     )
 }
 
+//////////////////////////////////////////RACERS//////////////////////////////////////////
 
+@Composable
+fun RacersList(racers: List<Racer>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "RACERS",
+            fontSize = 35.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(start = 20.dp, top = 25.dp, bottom = 10.dp)
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(racers) { racer ->
+                RacerCard(racer = racer)
+            }
+        }
+    }
+}
+
+@Composable
+fun RacerCard(racer: Racer) {
+    Card {
+        Column(modifier = Modifier.align(Alignment.CenterHorizontally)
+            .padding(bottom = 20.dp)
+            .width(200.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = racer.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 25.sp,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+                Text(
+                    text = racer.country.name,
+                    fontSize = 23.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+
+                Spacer(modifier = Modifier.width(15.dp))
+
+                FlagImage(
+                    flagPath = "flags/${racer.country.image}",
+                    modifier = Modifier.size(24.dp).align(Alignment.CenterVertically)
+                )
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
+                Text(
+                    text = racer.age.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 23.sp,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+
+                Text(
+                    text = racer.team.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 23.sp,
+                )
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////TRACKS//////////////////////////////////////////
+
+@Composable
+fun TracksList(tracks: List<Track>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "TRACKS",
+            fontSize = 35.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(start = 20.dp, top = 25.dp, bottom = 10.dp)
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(start = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(tracks) { track ->
+                TrackCard(track = track)
+            }
+        }
+    }
+}
+
+@Composable
+fun TrackCard(track: Track) {
+    Card {
+        Column(modifier = Modifier.align(Alignment.CenterHorizontally)
+            .padding(bottom = 20.dp)
+            .width(200.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = track.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 25.sp,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                Text(
+                    text = track.country.name,
+                    fontSize = 23.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+
+                Spacer(modifier = Modifier.width(15.dp))
+
+                FlagImage(
+                    flagPath = "flags/${track.country.image}",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Text(
+                text = track.distance.toString() + " km",
+                fontSize = 23.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            )
+        }
+    }
+}
+
+//////////////////////////////////////////PREVIEWS//////////////////////////////////////////
+
+//////////////////////////////////////////PREVIEW TEAMS//////////////////////////////////////////
 @Preview(showBackground = true)
 @Composable
 fun TeamCardPreview() {
@@ -167,8 +371,7 @@ fun TeamCardPreview() {
             id = 123,
             name = "Escudería 1",
             country = Country(id = 4, name = "Spain", image = "es.svg")
-        ),
-        modifier = Modifier
+        )
     )
 }
 
@@ -183,6 +386,167 @@ fun TeamListPreview() {
     TeamsList(list)
 }
 
+//////////////////////////////////////////PREVIEW RACERS//////////////////////////////////////////
+
+@Preview(showBackground = true)
+@Composable
+fun RacerCardPreview() {
+    RacerCard(
+        Racer(
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg")
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RacersListPreview() {
+    val list: List<Racer> = listOf(
+        Racer(
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
+        Racer(
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
+        Racer(
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
+        Racer(
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
+    )
+    RacersList(list)
+}
+
+//////////////////////////////////////////PREVIEW TRACKS//////////////////////////////////////////
+
+@Preview(showBackground = true)
+@Composable
+fun TrackCardPreview() {
+    TrackCard(
+        Track(
+            id = 123,
+            name = "Le Mans",
+            distance = 8.65,
+            country = Country(id = 1, name = "Italy", image = "it.svg")
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TracksListPreview() {
+    val list: List<Track> = listOf(
+        Track(
+            id = 123,
+            name = "Le Mans",
+            distance = 8.65,
+            country = Country(id = 1, name = "Italy", image = "it.svg")
+        ),
+    Track(
+        id = 12,
+        name = "Le Mans",
+        distance = 8.65,
+        country = Country(id = 1, name = "Italy", image = "it.svg")
+    ),
+    Track(
+        id = 1,
+        name = "Le Mans",
+        distance = 8.65,
+        country = Country(id = 1, name = "Italy", image = "it.svg")
+    ),
+    Track(
+        id = 1234,
+        name = "Le Mans",
+        distance = 8.65,
+        country = Country(id = 1, name = "Italy", image = "it.svg")
+    ),)
+
+    TracksList(list)
+}
+
+//////////////////////////////////////////PREVIEW WHOLE SCREEN//////////////////////////////////////////
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    val teamsList: List<Team> = listOf(
+        Team(id = 123, name = "Escudería 1", country = Country(id = 1, name = "Spain", image = "es.svg")),
+        Team(id = 1234, name = "Escudería 2", country = Country(id = 2, name = "Norway", image = "us.svg")),
+        Team(id = 1235, name = "Escudería 3", country = Country(id = 3, name = "France", image = "fr.svg"))
+    )
+
+    val racersList: List<Racer> = listOf(
+        Racer(
+            id = 123, name = "Marcos Salas", age = 25,
+            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg")
+        ),
+        Racer(
+            id = 124, name = "Carlos Pérez", age = 27,
+            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
+            country = Country(id = 2, name = "France", image = "fr.svg")
+        )
+        ,
+        Racer(
+            id = 124, name = "Carlos Pérez", age = 27,
+            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
+            country = Country(id = 2, name = "France", image = "fr.svg")
+        )
+        ,
+        Racer(
+            id = 124, name = "Carlos Pérez", age = 27,
+            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
+            country = Country(id = 2, name = "France", image = "fr.svg")
+        )
+        ,
+        Racer(
+            id = 124, name = "Carlos Pérez", age = 27,
+            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
+            country = Country(id = 2, name = "France", image = "fr.svg")
+        )
+    )
+
+    val trackList: List<Track> = listOf(
+        Track(id = 123, name = "Le Mans", distance = 8.65, country = Country(id = 1, name = "Italy", image = "it.svg")),
+        Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
+        ,Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg")),        Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
+        ,Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
+    )
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding(),
+                bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+            ),
+        contentPadding = PaddingValues(16.dp), // Espaciado general
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Separación entre elementos
+    ) {
+        item { TeamsList(teamsList) }
+        item { RacersList(racersList) }
+        item { TracksList(trackList) }
+    }
+}
+
+
+//////////////////////////////////////////PREVIEW GENERAL//////////////////////////////////////////
 
 @Composable
 fun LoadingComposable() {
@@ -199,10 +563,6 @@ fun FailureComposable() {
         Text(text = "An error occurred", modifier = Modifier.align(Alignment.Center))
     }
 }
-
-
-///PREVIEWS///
-
 
 @Preview(showBackground = true)
 @Composable

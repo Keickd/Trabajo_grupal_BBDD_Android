@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoadCountriesUseCase,
-                    private val getAllTeamsUseCase: GetAllTeamsUsecase,
-                    private val getAllRacersUseCase: GetAllRacersUseCase,
-                    private val getAllTracksUseCase: GetAllTracksUseCase): ViewModel() {
+open class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoadCountriesUseCase,
+                         private val getAllTeamsUseCase: GetAllTeamsUsecase,
+                         private val getAllRacersUseCase: GetAllRacersUseCase,
+                         private val getAllTracksUseCase: GetAllTracksUseCase): ViewModel() {
 
     private val homeDataMutableStateFlow = MutableStateFlow<HomeState>(
         HomeState.Data(
@@ -27,7 +27,7 @@ class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoadCoun
         )
     )
 
-    val homeDataStateFlow: StateFlow<HomeState> = homeDataMutableStateFlow
+    open val homeDataStateFlow: StateFlow<HomeState> = homeDataMutableStateFlow
     private lateinit var countryList: List<Country>
 
     init {
