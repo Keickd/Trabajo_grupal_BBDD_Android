@@ -1,6 +1,6 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository
 
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.CountryLocalDataSource
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.CountryLocalDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.CountryRepository
 

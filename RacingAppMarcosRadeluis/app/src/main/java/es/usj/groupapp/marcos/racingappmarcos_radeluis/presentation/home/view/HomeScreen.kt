@@ -1,17 +1,18 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,8 +28,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
@@ -36,7 +39,6 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
-import kotlin.coroutines.coroutineContext
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -46,25 +48,28 @@ fun HomeScreen(viewModel: HomeViewModel) {
         is HomeState.Loading -> LoadingComposable()
         is HomeState.Failure -> FailureComposable()
         is HomeState.Data -> {
-            val data = state as HomeState.Data
+            val stateValue = state.value
+            if (stateValue is HomeState.Data) {
+                val data = stateValue
 
-            Column {
-                when(data.teams) {
-                    is HomeListState.Loading -> LoadingComposable()
-                    is HomeListState.Failure -> FailureComposable()
-                    is HomeListState.Success -> FailureComposable()
-                }
+                Column {
+                    when (data.teams) {
+                        is HomeListState.Loading -> LoadingComposable()
+                        is HomeListState.Failure -> FailureComposable()
+                        is HomeListState.Success -> TeamsList(data.teams.data)
+                    }
 
-                when(data.racers) {
-                    is HomeListState.Loading -> LoadingComposable()
-                    is HomeListState.Failure -> FailureComposable()
-                    is HomeListState.Success -> FailureComposable()
-                }
+                    when (data.racers) {
+                        is HomeListState.Loading -> LoadingComposable()
+                        is HomeListState.Failure -> FailureComposable()
+                        is HomeListState.Success -> FailureComposable()
+                    }
 
-                when(data.tracks) {
-                    is HomeListState.Loading -> LoadingComposable()
-                    is HomeListState.Failure -> FailureComposable()
-                    is HomeListState.Success -> FailureComposable()
+                    when (data.tracks) {
+                        is HomeListState.Loading -> LoadingComposable()
+                        is HomeListState.Failure -> FailureComposable()
+                        is HomeListState.Success -> FailureComposable()
+                    }
                 }
             }
         }
@@ -75,13 +80,27 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 @Composable
 fun TeamsList(teams: List<Team>) {
-    LazyRow(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
-        items(teams) { team ->
-            TeamCard(team = team, modifier = Modifier.padding(end = 16.dp))
-            Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "TEAMS",
+            fontSize = 35.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(start = 20.dp, top = 25.dp, bottom = 10.dp)
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(20.dp),
+        ) {
+            items(teams) { team ->
+                TeamCard(team = team, modifier = Modifier.padding(end = 16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
@@ -147,7 +166,7 @@ fun TeamCardPreview() {
         Team(
             id = 123,
             name = "Escudería 1",
-            country = Country(name = "Spain", image = "es.svg")
+            country = Country(id = 4, name = "Spain", image = "es.svg")
         ),
         modifier = Modifier
     )
@@ -157,9 +176,9 @@ fun TeamCardPreview() {
 @Composable
 fun TeamListPreview() {
     val list: List<Team> = listOf(
-        Team(id = 123, name = "Escudería 1", country = Country(name = "Spain", image = "es.svg")),
-        Team(id = 1234, name = "Escudería 2", country = Country(name = "Norway", image = "us.svg")),
-        Team(id = 1235, name = "Escudería 3", country = Country(name = "France", image = "fr.svg"))
+        Team(id = 123, name = "Escudería 1", country = Country(id = 1, name = "Spain", image = "es.svg")),
+        Team(id = 1234, name = "Escudería 2", country = Country(id = 2, name = "Norway", image = "us.svg")),
+        Team(id = 1235, name = "Escudería 3", country = Country(id = 3, name = "France", image = "fr.svg"))
     )
     TeamsList(list)
 }
