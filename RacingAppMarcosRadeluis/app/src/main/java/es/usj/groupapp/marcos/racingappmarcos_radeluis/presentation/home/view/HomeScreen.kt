@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -138,12 +139,16 @@ fun TeamCard(team: Team) {
             .padding(bottom = 20.dp)
             .width(200.dp)) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = rememberAsyncImagePainter(
+                    model = team.image.ifBlank { R.drawable.ic_launcher_background }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
+                    .size(120.dp),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -226,13 +231,18 @@ fun RacerCard(racer: Racer) {
             .padding(bottom = 20.dp)
             .width(200.dp)) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = rememberAsyncImagePainter(
+                    model = racer.image.ifBlank { R.drawable.ic_launcher_background }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
+                    .size(120.dp),
+                contentScale = ContentScale.Crop
             )
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -316,12 +326,16 @@ fun TrackCard(track: Track) {
             .padding(bottom = 20.dp)
             .width(200.dp)) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = rememberAsyncImagePainter(
+                    model = track.image.ifBlank { R.drawable.ic_launcher_background }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
+                    .size(120.dp),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -370,6 +384,7 @@ fun TeamCardPreview() {
         Team(
             id = 123,
             name = "Escudería 1",
+            image = "",
             country = Country(id = 4, name = "Spain", image = "es.svg")
         )
     )
@@ -379,9 +394,9 @@ fun TeamCardPreview() {
 @Composable
 fun TeamListPreview() {
     val list: List<Team> = listOf(
-        Team(id = 123, name = "Escudería 1", country = Country(id = 1, name = "Spain", image = "es.svg")),
-        Team(id = 1234, name = "Escudería 2", country = Country(id = 2, name = "Norway", image = "us.svg")),
-        Team(id = 1235, name = "Escudería 3", country = Country(id = 3, name = "France", image = "fr.svg"))
+        Team(id = 123, name = "Escudería 1", image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+        Team(id = 1234, name = "Escudería 2", image = "", country = Country(id = 2, name = "Norway", image = "us.svg")),
+        Team(id = 1235, name = "Escudería 3",  image = "", country = Country(id = 3, name = "France", image = "fr.svg"))
     )
     TeamsList(list)
 }
@@ -396,7 +411,8 @@ fun RacerCardPreview() {
             id = 123,
             name = "Marcos Salas",
             age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg")
         )
     )
@@ -410,25 +426,29 @@ fun RacersListPreview() {
             id = 123,
             name = "Marcos Salas",
             age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            image = "",
+            team = Team(id = 1, name = "USJ", image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
             id = 123,
             name = "Marcos Salas",
             age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
             id = 123,
             name = "Marcos Salas",
             age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
             id = 123,
             name = "Marcos Salas",
             age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg"),),
     )
     RacersList(list)
@@ -444,6 +464,7 @@ fun TrackCardPreview() {
             id = 123,
             name = "Le Mans",
             distance = 8.65,
+            image = "",
             country = Country(id = 1, name = "Italy", image = "it.svg")
         )
     )
@@ -457,24 +478,28 @@ fun TracksListPreview() {
             id = 123,
             name = "Le Mans",
             distance = 8.65,
+            image = "",
             country = Country(id = 1, name = "Italy", image = "it.svg")
         ),
     Track(
         id = 12,
         name = "Le Mans",
         distance = 8.65,
+        image = "",
         country = Country(id = 1, name = "Italy", image = "it.svg")
     ),
     Track(
         id = 1,
         name = "Le Mans",
         distance = 8.65,
+        image = "",
         country = Country(id = 1, name = "Italy", image = "it.svg")
     ),
     Track(
         id = 1234,
         name = "Le Mans",
         distance = 8.65,
+        image = "",
         country = Country(id = 1, name = "Italy", image = "it.svg")
     ),)
 
@@ -486,47 +511,70 @@ fun TracksListPreview() {
 @Composable
 fun HomeScreenPreview() {
     val teamsList: List<Team> = listOf(
-        Team(id = 123, name = "Escudería 1", country = Country(id = 1, name = "Spain", image = "es.svg")),
-        Team(id = 1234, name = "Escudería 2", country = Country(id = 2, name = "Norway", image = "us.svg")),
-        Team(id = 1235, name = "Escudería 3", country = Country(id = 3, name = "France", image = "fr.svg"))
+        Team(id = 123, name = "Escudería 1", image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+        Team(id = 1234, name = "Escudería 2", image = "", country = Country(id = 2, name = "Norway", image = "us.svg")),
+        Team(id = 1235, name = "Escudería 3",  image = "", country = Country(id = 3, name = "France", image = "fr.svg"))
     )
 
     val racersList: List<Racer> = listOf(
         Racer(
-            id = 123, name = "Marcos Salas", age = 25,
-            team = Team(id = 1, name = "USJ", country = Country(id = 1, name = "Spain", image = "es.svg")),
-            country = Country(id = 1, name = "Spain", image = "es.svg")
-        ),
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            image = "",
+            team = Team(id = 1, name = "USJ", image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
-            id = 124, name = "Carlos Pérez", age = 27,
-            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
-            country = Country(id = 2, name = "France", image = "fr.svg")
-        )
-        ,
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
-            id = 124, name = "Carlos Pérez", age = 27,
-            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
-            country = Country(id = 2, name = "France", image = "fr.svg")
-        )
-        ,
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
         Racer(
-            id = 124, name = "Carlos Pérez", age = 27,
-            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
-            country = Country(id = 2, name = "France", image = "fr.svg")
-        )
-        ,
-        Racer(
-            id = 124, name = "Carlos Pérez", age = 27,
-            team = Team(id = 2, name = "Team B", country = Country(id = 2, name = "France", image = "fr.svg")),
-            country = Country(id = 2, name = "France", image = "fr.svg")
-        )
+            id = 123,
+            name = "Marcos Salas",
+            age = 25,
+            image = "",
+            team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
+            country = Country(id = 1, name = "Spain", image = "es.svg"),),
     )
 
     val trackList: List<Track> = listOf(
-        Track(id = 123, name = "Le Mans", distance = 8.65, country = Country(id = 1, name = "Italy", image = "it.svg")),
-        Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
-        ,Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg")),        Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
-        ,Track(id = 124, name = "Silverstone", distance = 5.89, country = Country(id = 2, name = "UK", image = "gb.svg"))
+        Track(
+            id = 123,
+            name = "Le Mans",
+            distance = 8.65,
+            image = "",
+            country = Country(id = 1, name = "Italy", image = "it.svg")
+        ),
+        Track(
+            id = 12,
+            name = "Le Mans",
+            distance = 8.65,
+            image = "",
+            country = Country(id = 1, name = "Italy", image = "it.svg")
+        ),
+        Track(
+            id = 1,
+            name = "Le Mans",
+            distance = 8.65,
+            image = "",
+            country = Country(id = 1, name = "Italy", image = "it.svg")
+        ),
+        Track(
+            id = 1234,
+            name = "Le Mans",
+            distance = 8.65,
+            image = "",
+            country = Country(id = 1, name = "Italy", image = "it.svg"))
     )
 
     LazyColumn(
@@ -536,8 +584,8 @@ fun HomeScreenPreview() {
                 top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding(),
                 bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
             ),
-        contentPadding = PaddingValues(16.dp), // Espaciado general
-        verticalArrangement = Arrangement.spacedBy(16.dp) // Separación entre elementos
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { TeamsList(teamsList) }
         item { RacersList(racersList) }

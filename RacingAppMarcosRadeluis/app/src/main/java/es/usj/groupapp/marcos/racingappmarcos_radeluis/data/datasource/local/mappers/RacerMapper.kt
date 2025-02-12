@@ -15,6 +15,7 @@ class RacerMapper(private val countryMapper: CountryMapper, private val teamMapp
             age =  racer.age,
             country_id = racer.country.id,
             team_id = racer.team.id,
+            image = racer.image,
         )
     }
 
@@ -25,6 +26,7 @@ class RacerMapper(private val countryMapper: CountryMapper, private val teamMapp
             age = racerEntity.age,
             country = countryMapper.mapToDomain(countryEntity),
             team = teamMapper.mapToDomain(teamEntity, countryEntity),
+            image = racerEntity.image
         )
     }
 }

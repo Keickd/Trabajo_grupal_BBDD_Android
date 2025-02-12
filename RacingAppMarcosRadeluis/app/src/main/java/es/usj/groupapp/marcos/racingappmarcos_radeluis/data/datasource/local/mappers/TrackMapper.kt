@@ -12,6 +12,7 @@ class TrackMapper(private val countryMapper: CountryMapper) {
             name = track.name,
             distance = track.distance,
             country_id = track.country.id,
+            image = track.image,
         )
     }
 
@@ -20,7 +21,8 @@ class TrackMapper(private val countryMapper: CountryMapper) {
             id = trackEntity.id,
             name = trackEntity.name,
             distance = trackEntity.distance,
-            country = countryMapper.mapToDomain(countryEntity)
+            country = countryMapper.mapToDomain(countryEntity),
+            image = trackEntity.image,
         )
     }
 }
