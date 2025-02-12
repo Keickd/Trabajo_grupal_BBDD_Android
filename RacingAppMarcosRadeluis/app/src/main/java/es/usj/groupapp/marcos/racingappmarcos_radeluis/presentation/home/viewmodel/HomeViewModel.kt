@@ -59,15 +59,8 @@ open class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoa
                     tracks = HomeListState.Success(tracks)
                 )
             } catch (e: Exception) {
-                homeDataMutableStateFlow.value = HomeState.Failure(e)
+                 homeDataMutableStateFlow.value = HomeState.Failure(e)
             }
-        }
-    }
-
-    private fun updateState(update: (HomeState.Data) -> HomeState.Data) {
-        val currentState = homeDataMutableStateFlow.value
-        if (currentState is HomeState.Data) {
-            homeDataMutableStateFlow.value = update(currentState)
         }
     }
 }

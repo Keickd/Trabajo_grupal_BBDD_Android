@@ -10,7 +10,8 @@ class TeamMapper(private val countryMapper: CountryMapper) {
         return TeamEntity(
             id = team.id,
             name = team.name,
-            country_id = team.country.id
+            country_id = team.country.id,
+            image = team.image,
         )
     }
 
@@ -18,7 +19,8 @@ class TeamMapper(private val countryMapper: CountryMapper) {
         return Team(
             id = teamEntity.id,
             name = teamEntity.name,
-            country = countryMapper.mapToDomain(countryEntity)
+            country = countryMapper.mapToDomain(countryEntity),
+            image = teamEntity.image,
         )
     }
 }
