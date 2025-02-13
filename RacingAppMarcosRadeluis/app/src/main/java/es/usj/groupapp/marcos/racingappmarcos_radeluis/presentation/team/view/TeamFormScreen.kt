@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -109,7 +110,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = {},
+                    onClick = { coroutineScope.launch { viewModel.addTeam() } },
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text("Add Team")

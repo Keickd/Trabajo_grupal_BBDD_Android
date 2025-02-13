@@ -7,16 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 
 class TeamFormViewModel(
     private val getAllCountriesUseCase: GetAllCountriesUseCase,
+    private val insertTeamUseCase: InsertTeamUseCase,
     savedState: SavedStateHandle = SavedStateHandle(),
 ) : ViewModel() {
     private val _state: MutableStateFlow<TeamState> = MutableStateFlow(TeamState.Loading)
@@ -53,9 +58,31 @@ class TeamFormViewModel(
     val countryId: Long?
         get() = _CountryId.value
 
-    fun updateCountryId(newId: Long?) {
-        _CountryId.value = newId
+    fun updateCountryId(countryId: Long?) {
+        _CountryId.value = countryId
     }
+
+    suspend fun addTeam() {
+        withContext(Dispatchers.IO) {
+            try {
+                val team =
+                    Team(
+                        name = teamName,
+                        country = Country(
+                            id = countryId,
+                            name = teamName,
+                            image = "",
+                        )
+                )
+
+                insertTeamUseCase.insertTeam(team)
+            } catch (e: Exception) {
+                _state.value = TeamState.Error(e.message ?: "Unknown error")
+            }
+        }
+
+    }
+
 }
 
 sealed class TeamState {
