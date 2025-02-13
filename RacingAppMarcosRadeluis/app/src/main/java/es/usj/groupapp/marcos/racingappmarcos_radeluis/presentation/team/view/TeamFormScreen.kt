@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
+        val coroutineScope = rememberCoroutineScope()
 
         when (teamsState) {
             is TeamState.Error -> {
@@ -55,10 +57,8 @@ fun TeamFormScreen(viewModel: TeamFormViewModel) {
 
             is TeamState.Success -> {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { newValue: String -> {
-
-                    } },
+                    value =  viewModel.teamName,
+                    onValueChange = { newValue: String -> viewModel.updateTeamName(newValue)  },
                     label = { Text("Team name") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -68,8 +68,8 @@ fun TeamFormScreen(viewModel: TeamFormViewModel) {
                 Box {
                     OutlinedTextField(
                         value = selectedOption.value.name,
-                        onValueChange = {},
-                        label = { Text("Team name") },
+                        onValueChange = { },
+                        label = { Text("Country") },
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = true,
                         trailingIcon = {
@@ -97,6 +97,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel) {
                                 },
                                 onClick = {
                                     selectedOption.value = country
+                                    viewModel.updateCountryId(country.id)
                                     expanded.value = false
                                 }
                             )

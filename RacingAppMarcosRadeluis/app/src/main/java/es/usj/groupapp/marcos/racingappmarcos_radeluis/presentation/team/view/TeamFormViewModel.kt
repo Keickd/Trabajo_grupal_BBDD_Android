@@ -21,8 +21,6 @@ class TeamFormViewModel(
 ) : ViewModel() {
     private val _state: MutableStateFlow<TeamState> = MutableStateFlow(TeamState.Loading)
 
-    val name = savedState.toRoute<NewTeam>().name
-
     val state: StateFlow<TeamState> = _state.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(),
         TeamState.Loading
@@ -34,7 +32,6 @@ class TeamFormViewModel(
                 getAllCountriesUseCase.getAllCountries()
                     .collect {
                         _state.value = TeamState.Success(it)
-                        Log.d("TeamFormViewModel", "Teams: $it")
                     }
             }.onFailure {
                 Log.e("TeamFormViewModel", it.message ?: "Unknown error")
