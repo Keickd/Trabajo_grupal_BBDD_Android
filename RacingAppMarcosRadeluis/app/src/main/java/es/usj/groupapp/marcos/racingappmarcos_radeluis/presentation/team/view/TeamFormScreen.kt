@@ -19,18 +19,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 
 
 @Composable
-fun TeamFormScreen() {
+fun TeamFormScreen(viewModel: TeamFormViewModel) {
+    val teamsState = viewModel.state.collectAsState().value
     var expanded = remember { mutableStateOf(false) }
-    var selectedOption = remember { mutableStateOf("Option 1") }
-    val options = listOf("Option 1", "Option 2", "Option 3", "Option 4")
+    var selectedOption = remember { mutableStateOf(Country(null, "Select a country", "")) }
 
 
     Column(
@@ -40,57 +42,78 @@ fun TeamFormScreen() {
             .verticalScroll(rememberScrollState()),
     ) {
 
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            label = { Text("Team name") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        when (teamsState) {
+            is TeamState.Error -> {
+                Column {
+                    Text(text = teamsState.message)
+                }
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            TeamState.Loading -> {
+                Text(text = "Loading")
+            }
 
-        Box {
-            OutlinedTextField(
-                value = selectedOption.value,
-                onValueChange = {},
-                label = { Text("Team name") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = { expanded.value = !expanded.value }) {
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "options")
-                    }
-                },
-            )
+            is TeamState.Success -> {
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = { newValue: String -> {
 
-            DropdownMenu(
-                expanded = expanded.value,
-                onDismissRequest = { expanded.value = false },
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                option
-                            )
+                    } },
+                    label = { Text("Team name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box {
+                    OutlinedTextField(
+                        value = selectedOption.value.name,
+                        onValueChange = {},
+                        label = { Text("Team name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { expanded.value = !expanded.value }) {
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "options"
+                                )
+                            }
                         },
-                        onClick = {
-                            selectedOption.value = option
-                            expanded.value = false
-                        }
                     )
+
+                    DropdownMenu(
+                        expanded = expanded.value,
+                        onDismissRequest = { expanded.value = false },
+                    ) {
+                        val countries = teamsState.countries
+
+                        countries.forEach { country ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        country.name
+                                    )
+                                },
+                                onClick = {
+                                    selectedOption.value = country
+                                    expanded.value = false
+                                }
+                            )
+                        }
+
+                    }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {},
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text("Add Team")
+                }
             }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = {},
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Add Team")
         }
     }
 

@@ -23,5 +23,5 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.entities.
 data class TeamEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val country_id: Long
+    val country_id: Long?
 )
