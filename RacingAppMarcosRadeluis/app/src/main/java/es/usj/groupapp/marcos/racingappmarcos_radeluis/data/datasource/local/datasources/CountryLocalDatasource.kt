@@ -6,8 +6,12 @@ import com.google.gson.Gson
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.CountryMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.InputStreamReader
 
@@ -41,6 +45,19 @@ class CountryLocalDataSource(
         }
 
         return countryList
+    }
+
+    fun getAllCountries(): Flow<List<Country>> {
+        return countryDao.getAllCountries().flatMapLatest { countryEntities ->
+            flow {
+                val countries = countryEntities.map { countryEntity ->
+                    val countryEntity = countryDao.getCountryById(countryEntity.id)
+                    countryMapper.mapToDomain(countryEntity)
+                }
+
+                emit(countries)
+            }
+        }
     }
 
 }
