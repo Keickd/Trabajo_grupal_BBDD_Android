@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +10,8 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.NewTeam
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,7 +48,7 @@ class TeamFormViewModel(
     }
 
     private var _teamName = mutableStateOf(savedState.toRoute<NewTeam>().name)
-    private var _CountryId = mutableStateOf(savedState.toRoute<NewTeam>().country_id)
+    private var _countryId = mutableStateOf(savedState.toRoute<NewTeam>().country_id)
 
     val teamName: String
         get() = _teamName.value
@@ -56,10 +58,10 @@ class TeamFormViewModel(
     }
 
     val countryId: Long?
-        get() = _CountryId.value
+        get() = _countryId.value
 
     fun updateCountryId(countryId: Long?) {
-        _CountryId.value = countryId
+        _countryId.value = countryId
     }
 
     suspend fun addTeam() {
@@ -68,12 +70,10 @@ class TeamFormViewModel(
                 val team =
                     Team(
                         name = teamName,
-                        country = Country(
-                            id = countryId,
-                            name = teamName,
-                            image = "",
-                        )
-                )
+                        country = TODO(),
+                        id = TODO(),
+                        image = TODO()
+                    )
 
                 insertTeamUseCase.insertTeam(team)
             } catch (e: Exception) {
@@ -85,14 +85,3 @@ class TeamFormViewModel(
 
 }
 
-sealed class TeamState {
-    data object Loading : TeamState()
-    data class Success(val countries: List<Country>) : TeamState()
-    data class Error(val message: String) : TeamState()
-}
-
-@Serializable
-data class NewTeam(
-    val name: String = "",
-    val country_id: Long? = null
-)

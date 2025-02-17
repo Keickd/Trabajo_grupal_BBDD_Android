@@ -3,7 +3,6 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TeamLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.TeamRepository
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.NewTeam
 import kotlinx.coroutines.flow.Flow
 
 class TeamRepositoryImpl(private val teamLocalDatasource: TeamLocalDatasource): TeamRepository {
