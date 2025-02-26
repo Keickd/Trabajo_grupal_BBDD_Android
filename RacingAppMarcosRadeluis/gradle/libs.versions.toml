@@ -2,6 +2,7 @@
 agp = "8.6.1"
 coilCompose = "3.0.4"
 coilComposeVersion = "2.5.0"
+coreSplashscreen = "1.0.1"
 gson = "2.11.0"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
@@ -27,6 +28,7 @@ symbolProcessingApi = "2.1.10"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 #noinspection SimilarGradleDependency
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 #noinspection SimilarGradleDependency
 androidx-room-ktx-v250 = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
