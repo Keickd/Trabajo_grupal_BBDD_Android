@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view
 
 import android.net.Uri
 import android.util.Log
@@ -7,15 +7,40 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,20 +52,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 import kotlinx.coroutines.launch
 
+
 @Composable
-fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController) {
-    val racersState by viewModel.state.collectAsState()
-    val racerName by viewModel.racerName.collectAsState()
-    val racerAge by viewModel.racerAge.collectAsState()
-    val teamId by viewModel.teamId.collectAsState()
+fun TrackFormScreen(viewModel: TrackFormViewModel, navController: NavController) {
+    val tracksState by viewModel.state.collectAsState()
+    val trackName by viewModel.trackName.collectAsState()
+    val trackDistance by viewModel.trackDistance.collectAsState()
     val countryId by viewModel.countryId.collectAsState()
-    var expandedCountry by remember { mutableStateOf(false) }
-    var expandedTeam by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -49,30 +72,21 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
         uri?.let {
             Log.d("ImagePicker", "Selected image URI: $it")
             imageUri = it
-            viewModel.updateRacerImage(it.toString())
+            viewModel.updateTrackImage(it.toString())
         }
     }
 
-    val countries = if (racersState is RacerState.Success) {
-        (racersState as RacerState.Success).countries
+    val countries = if (tracksState is TrackState.Success) {
+        (tracksState as TrackState.Success).countries
     } else {
         emptyList()
     }
 
-    val teams = if (racersState is RacerState.Success) {
-        (racersState as RacerState.Success).teams
-    } else {
-        emptyList()
+    val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
+
+    val isButtonEnabled by remember(trackName, trackDistance, countryId, imageUri) {
+        derivedStateOf { trackName.isNotBlank() && trackDistance.toDoubleOrNull() != null && selectedOption.id.toInt() != 0 }
     }
-
-    val selectedCountry = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
-    val selectedTeam = teams.find { it.id == teamId } ?: Team(0, "Select a team", "", selectedCountry)
-
-
-    val isButtonEnabled by remember(racerName, racerAge, countryId, teamId, imageUri) {
-        derivedStateOf { racerName.isNotBlank() && racerAge.toIntOrNull() != null && selectedCountry.id.toInt() != 0 && selectedTeam.id.toInt() != 0}
-    }
-
 
     Column(
         modifier = Modifier
@@ -83,13 +97,12 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
     ) {
         val coroutineScope = rememberCoroutineScope()
 
-
-        when (racersState) {
-            is RacerState.Error -> FailureComposable()
-            RacerState.Loading -> LoadingComposable()
-            is RacerState.Success -> {
+        when (tracksState) {
+            is TrackState.Error -> FailureComposable()
+            TrackState.Loading -> LoadingComposable()
+            is TrackState.Success -> {
                 Text(
-                    text = "Create a new racer",
+                    text = "Create a new track",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -98,9 +111,9 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                 )
 
                 OutlinedTextField(
-                    value = racerName,
-                    onValueChange = { viewModel.updateRacerName(it) },
-                    label = { Text("Racer name", style = MaterialTheme.typography.headlineSmall) },
+                    value = trackName,
+                    onValueChange = { viewModel.updateTrackName(it) },
+                    label = { Text("track name", style = MaterialTheme.typography.headlineSmall) },
                     textStyle = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -108,9 +121,9 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                 Spacer(modifier = Modifier.height(30.dp))
 
                 OutlinedTextField(
-                    value = racerAge,
-                    onValueChange = { viewModel.updateRacerAge(it) },
-                    label = { Text("Racer age", style = MaterialTheme.typography.headlineSmall) },
+                    value = trackDistance,
+                    onValueChange = { viewModel.updateTrackDistance(it) },
+                    label = { Text("track distance", style = MaterialTheme.typography.headlineSmall) },
                     textStyle = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -119,14 +132,14 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
 
                 Box {
                     OutlinedTextField(
-                        value = selectedCountry.name,
+                        value = selectedOption.name,
                         onValueChange = {},
                         label = { Text("Country", style = MaterialTheme.typography.headlineSmall) },
                         textStyle = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = true,
                         trailingIcon = {
-                            IconButton(onClick = { expandedCountry = !expandedCountry }) {
+                            IconButton(onClick = { expanded = !expanded }) {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
                                     contentDescription = "options",
@@ -135,7 +148,7 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                             }
                         },
                         leadingIcon = {
-                            selectedCountry.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                            selectedOption.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
                                 FlagImage(
                                     flagPath = imageUrl,
                                     modifier = Modifier
@@ -146,8 +159,8 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                     )
 
                     DropdownMenu(
-                        expanded = expandedCountry,
-                        onDismissRequest = { expandedCountry = false },
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
                     ) {
                         countries.forEach { country ->
                             DropdownMenuItem(
@@ -165,64 +178,7 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                                 },
                                 onClick = {
                                     viewModel.updateCountryId(country.id)
-                                    expandedCountry = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Box {
-                    OutlinedTextField(
-                        value = selectedTeam.name,
-                        onValueChange = {},
-                        label = { Text("Team", style = MaterialTheme.typography.headlineSmall) },
-                        textStyle = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        trailingIcon = {
-                            IconButton(onClick = { expandedTeam = !expandedTeam }) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "options",
-                                    modifier = Modifier.size(50.dp)
-                                )
-                            }
-                        },
-                        leadingIcon = {
-                            selectedTeam.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
-                                FlagImage(
-                                    flagPath = imageUrl,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                )
-                            }
-                        }
-                    )
-
-                    DropdownMenu(
-                        expanded = expandedTeam,
-                        onDismissRequest = { expandedTeam = false },
-                    ) {
-                        teams.forEach { team ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        FlagImage(
-                                            flagPath = team.image,
-                                            modifier = Modifier
-                                                .align(Alignment.CenterVertically)
-                                                .size(24.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Text(team.name, style = MaterialTheme.typography.headlineMedium)
-                                    }
-                                },
-                                onClick = {
-                                    viewModel.updateTeamId(team.id)
-                                    expandedTeam = false
+                                    expanded = false
                                 }
                             )
                         }
@@ -277,14 +233,14 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController)
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.addRacer()
+                            viewModel.addTrack()
                             navController.popBackStack()
                         }
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
                 ) {
-                    Text("Add Racer", style = MaterialTheme.typography.headlineMedium)
+                    Text("Add track", style = MaterialTheme.typography.headlineMedium)
                 }
 
 
@@ -317,11 +273,11 @@ fun FailureComposable() {
 /*
 @Composable
 @Preview(showBackground = true)
-fun PreviewTeamFormScreen() {
+fun PreviewtrackFormScreen() {
 
-    val fakeViewModel = object : TeamFormViewModel(GetAllCountriesUseCase()) {
-        override val state: StateFlow<TeamState> = MutableStateFlow(
-            TeamState.Success(
+    val fakeViewModel = object : TrackFormViewModel(GetAllCountriesUseCase()) {
+        override val state: StateFlow<trackState> = MutableStateFlow(
+            trackState.Success(
                 countries = listOf(
                     Country(1, "Spain", ""),
                     Country(2, "France", ""),
@@ -330,7 +286,7 @@ fun PreviewTeamFormScreen() {
             )
         )
     }
-    TeamFormScreen(viewModel = fakeViewModel)
+    trackFormScreen(viewModel = fakeViewModel)
 }
 */
 

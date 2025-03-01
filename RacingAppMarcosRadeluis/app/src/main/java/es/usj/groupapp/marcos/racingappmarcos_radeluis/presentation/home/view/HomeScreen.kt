@@ -129,7 +129,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
                         is HomeListState.Success -> TracksList(data.tracks.data, {
-                            navController.navigate("team_form")
+                            navController.navigate("track_form")
                         })
                     }
                 }

@@ -26,6 +26,9 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewm
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.TrackFormScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +66,17 @@ class MainActivity : ComponentActivity() {
                     val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
 
                     RacerFormScreen(viewModel = racerViewModel, navController = navController)
+                }
+
+                composable("track_form") { backStackEntry ->
+                    val trackFactory = TrackFormViewModelFactory(
+                        context = this@MainActivity,
+                        database = database,
+                        savedStateHandle = backStackEntry.savedStateHandle
+                    )
+                    val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+
+                    TrackFormScreen(viewModel = trackViewModel, navController = navController)
                 }
             }
         }

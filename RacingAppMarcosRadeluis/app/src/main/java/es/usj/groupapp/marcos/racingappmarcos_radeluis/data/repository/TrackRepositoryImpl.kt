@@ -1,6 +1,7 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository
 
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TrackLocalDatasource
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.TrackRepository
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +10,10 @@ class TrackRepositoryImpl(private val trackLocalDatasource: TrackLocalDatasource
 
     override fun getAllTracks(): Flow<List<Track>> {
         return trackLocalDatasource.getAllTracksFlow()
+    }
+
+    override suspend fun insertTrack(track: Track) {
+        trackLocalDatasource.insertTrack(track)
     }
 }
 
