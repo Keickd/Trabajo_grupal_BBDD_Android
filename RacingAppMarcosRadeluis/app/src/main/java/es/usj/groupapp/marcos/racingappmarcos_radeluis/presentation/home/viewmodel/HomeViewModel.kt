@@ -46,21 +46,35 @@ open class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoa
         }
     }
 
+    private fun updateState(update: (HomeState.Data) -> HomeState.Data) {
+        val currentState = homeDataMutableStateFlow.value
+        if (currentState is HomeState.Data) {
+            homeDataMutableStateFlow.value = update(currentState)
+        }
+    }
+
+
     private fun getData() {
         viewModelScope.launch {
-            try {
-                val teams = getAllTeamsUseCase.getAllTeams().first()
-                val racers = getAllRacersUseCase.getAllRacers().first()
-                val tracks = getAllTracksUseCase.getAllTracks().first()
+            launch {
+                getAllRacersUseCase.getAllRacers().collect { racers ->
+                    updateState { it.update(racers = HomeListState.Success(racers)) }
+                }
+            }
 
-                homeDataMutableStateFlow.value = HomeState.Data(
-                    teams = HomeListState.Success(teams),
-                    racers = HomeListState.Success(racers),
-                    tracks = HomeListState.Success(tracks)
-                )
-            } catch (e: Exception) {
-                 homeDataMutableStateFlow.value = HomeState.Failure(e)
+            launch {
+                getAllTeamsUseCase.getAllTeams().collect { teams ->
+                    updateState { it.update(teams = HomeListState.Success(teams)) }
+                }
+            }
+
+            launch {
+                getAllTracksUseCase.getAllTracks().collect { tracks ->
+                    updateState { it.update(tracks = HomeListState.Success(tracks)) }
+                }
             }
         }
     }
+
+
 }
