@@ -3,6 +3,7 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.da
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TrackMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.TrackDao
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,5 +28,9 @@ class TrackLocalDatasource(
                 emit(tracks)
             }
         }
+    }
+
+    suspend fun insertTrack(track: Track) {
+        trackDao.insertTrack(trackMapper.mapToEntity(track))
     }
 }
