@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view
 
 import android.net.Uri
 import android.util.Log
@@ -27,16 +27,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
-    val teamsState by viewModel.state.collectAsState()
-    val teamName by viewModel.teamName.collectAsState()
+fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController) {
+    val racersState by viewModel.state.collectAsState()
+    val racerName by viewModel.racerName.collectAsState()
+    val racerAge by viewModel.racerAge.collectAsState()
+    val teamId by viewModel.teamId.collectAsState()
     val countryId by viewModel.countryId.collectAsState()
-    var expanded by remember { mutableStateOf(false) }
+    var expandedCountry by remember { mutableStateOf(false) }
+    var expandedTeam by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -45,20 +49,28 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
         uri?.let {
             Log.d("ImagePicker", "Selected image URI: $it")
             imageUri = it
-            viewModel.updateTeamImage(it.toString())
+            viewModel.updateRacerImage(it.toString())
         }
     }
 
-    val countries = if (teamsState is TeamState.Success) {
-        (teamsState as TeamState.Success).countries
+    val countries = if (racersState is RacerState.Success) {
+        (racersState as RacerState.Success).countries
     } else {
         emptyList()
     }
 
-    val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
+    val teams = if (racersState is RacerState.Success) {
+        (racersState as RacerState.Success).teams
+    } else {
+        emptyList()
+    }
 
-    val isButtonEnabled by remember(teamName, countryId, imageUri) {
-        derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
+    val selectedCountry = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
+    val selectedTeam = teams.find { it.id == teamId } ?: Team(0, "Select a team", "", selectedCountry)
+
+
+    val isButtonEnabled by remember(racerName, racerAge, countryId, teamId, imageUri) {
+        derivedStateOf { racerName.isNotBlank() && racerAge.isNotBlank() && selectedCountry.id.toInt() != 0 && selectedTeam.id.toInt() != 0}
     }
 
 
@@ -71,12 +83,13 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
     ) {
         val coroutineScope = rememberCoroutineScope()
 
-        when (teamsState) {
-            is TeamState.Error -> FailureComposable()
-            TeamState.Loading -> LoadingComposable()
-            is TeamState.Success -> {
+
+        when (racersState) {
+            is RacerState.Error -> FailureComposable()
+            RacerState.Loading -> LoadingComposable()
+            is RacerState.Success -> {
                 Text(
-                    text = "Create a new team",
+                    text = "Create a new racer",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -85,9 +98,19 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                 )
 
                 OutlinedTextField(
-                    value = teamName,
-                    onValueChange = { viewModel.updateTeamName(it) },
-                    label = { Text("Team name", style = MaterialTheme.typography.headlineSmall) },
+                    value = racerName,
+                    onValueChange = { viewModel.updateRacerName(it) },
+                    label = { Text("Racer name", style = MaterialTheme.typography.headlineSmall) },
+                    textStyle = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                OutlinedTextField(
+                    value = racerAge,
+                    onValueChange = { viewModel.updateRacerAge(it) },
+                    label = { Text("Racer age", style = MaterialTheme.typography.headlineSmall) },
                     textStyle = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -96,14 +119,14 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
 
                 Box {
                     OutlinedTextField(
-                        value = selectedOption.name,
+                        value = selectedCountry.name,
                         onValueChange = {},
                         label = { Text("Country", style = MaterialTheme.typography.headlineSmall) },
                         textStyle = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = true,
                         trailingIcon = {
-                            IconButton(onClick = { expanded = !expanded }) {
+                            IconButton(onClick = { expandedCountry = !expandedCountry }) {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
                                     contentDescription = "options",
@@ -112,7 +135,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                             }
                         },
                         leadingIcon = {
-                            selectedOption.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                            selectedCountry.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
                                 FlagImage(
                                     flagPath = imageUrl,
                                     modifier = Modifier
@@ -123,8 +146,8 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                     )
 
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                        expanded = expandedCountry,
+                        onDismissRequest = { expandedCountry = false },
                     ) {
                         countries.forEach { country ->
                             DropdownMenuItem(
@@ -142,7 +165,64 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                                 },
                                 onClick = {
                                     viewModel.updateCountryId(country.id)
-                                    expanded = false
+                                    expandedCountry = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Box {
+                    OutlinedTextField(
+                        value = selectedTeam.name,
+                        onValueChange = {},
+                        label = { Text("Team", style = MaterialTheme.typography.headlineSmall) },
+                        textStyle = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { expandedTeam = !expandedTeam }) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "options",
+                                    modifier = Modifier.size(50.dp)
+                                )
+                            }
+                        },
+                        leadingIcon = {
+                            selectedTeam.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                                FlagImage(
+                                    flagPath = imageUrl,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                )
+                            }
+                        }
+                    )
+
+                    DropdownMenu(
+                        expanded = expandedTeam,
+                        onDismissRequest = { expandedTeam = false },
+                    ) {
+                        teams.forEach { team ->
+                            DropdownMenuItem(
+                                text = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        FlagImage(
+                                            flagPath = team.image,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterVertically)
+                                                .size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        Text(team.name, style = MaterialTheme.typography.headlineMedium)
+                                    }
+                                },
+                                onClick = {
+                                    viewModel.updateTeamId(team.id)
+                                    expandedTeam = false
                                 }
                             )
                         }
@@ -197,14 +277,14 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.addTeam()
+                            viewModel.addRacer()
                             navController.popBackStack()
                         }
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
                 ) {
-                    Text("Add Team", style = MaterialTheme.typography.headlineMedium)
+                    Text("Add Racer", style = MaterialTheme.typography.headlineMedium)
                 }
 
 
