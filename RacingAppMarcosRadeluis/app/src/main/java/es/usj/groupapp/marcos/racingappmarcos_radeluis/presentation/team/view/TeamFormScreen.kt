@@ -58,7 +58,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
     val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
 
     val isButtonEnabled by remember(teamName, countryId, imageUri) {
-        derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 && imageUri != null }
+        derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
     }
 
 

@@ -1,15 +1,13 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel
 
-import android.content.Context
-import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.saveImageToInternalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -67,6 +65,10 @@ class TeamFormViewModel(
 
     fun addTeam() {
         viewModelScope.launch(Dispatchers.IO) {
+            val finalImage = teamImage.value.ifBlank {
+                "android.resource://es.usj.groupapp.marcos.racingappmarcos_radeluis/${R.drawable.team}"
+            }
+
             try {
                 val country = _state.value.let { state ->
                     if (state is TeamState.Success) {
@@ -83,7 +85,7 @@ class TeamFormViewModel(
                     name = _teamName.value,
                     country = country,
                     id = 0,
-                    image = _teamImageUri.value
+                    image = finalImage
                 )
 
                 insertTeamUseCase.insertTeam(team)
