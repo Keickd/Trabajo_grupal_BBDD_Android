@@ -5,6 +5,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.CountryDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.TeamDao
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -29,5 +30,9 @@ class RacerLocalDatasource(
                 emit(racers)
             }
         }
+    }
+
+    suspend fun insertRacer(racer: Racer) {
+        racerDao.insertRacer(racerMapper.mapToEntity(racer))
     }
 }

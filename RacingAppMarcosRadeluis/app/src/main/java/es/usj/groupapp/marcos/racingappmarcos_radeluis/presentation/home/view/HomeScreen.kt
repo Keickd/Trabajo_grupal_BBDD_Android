@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -105,13 +107,21 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
                 }
 
                 item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                item {
                     when (data.racers) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
                         is HomeListState.Success -> RacersList(data.racers.data, {
-                            navController.navigate("team_form")
+                            navController.navigate("racer_form")
                         })
                     }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 item {
