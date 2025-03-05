@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(
-                bottomBar = { BottomNavigationSample(navController) },
+                bottomBar = { BottomNavigation(navController) },
 
                 ) { innerPadding ->
                 Column(
@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun BottomNavigationSample(navController: NavHostController) {
+fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
         BottomNavItem("home", Icons.Default.Home, "Home"),
         BottomNavItem("races", ImageVector.vectorResource(R.drawable.baseline_directions_car_24), "Races"),
