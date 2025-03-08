@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -39,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.firestore.ktx)
     implementation (libs.androidx.room.runtime)
     ksp (libs.androidx.room.compiler.v250)
     implementation (libs.androidx.room.ktx.v250)

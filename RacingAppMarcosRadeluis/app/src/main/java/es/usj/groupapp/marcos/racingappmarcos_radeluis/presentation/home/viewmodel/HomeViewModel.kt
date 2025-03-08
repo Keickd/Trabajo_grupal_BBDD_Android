@@ -11,7 +11,6 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.Ho
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 open class HomeViewModel(private val insertAndLoadCountriesUseCase: InsertAndLoadCountriesUseCase,

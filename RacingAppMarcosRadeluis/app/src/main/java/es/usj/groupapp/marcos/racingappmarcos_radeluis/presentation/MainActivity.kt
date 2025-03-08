@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
@@ -30,10 +31,13 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view.NewsScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
@@ -68,6 +72,13 @@ class MainActivity : ComponentActivity() {
 
                         composable("races") {
                             RacesScreen()
+                        }
+
+                        composable("news") {
+                            val newsFactory = NewsViewModelFactory()
+                            val newsViewModel = newsFactory.create(NewsViewModel::class.java)
+
+                            NewsScreen(newsViewModel, navController)
                         }
 
                         composable("settings") {
@@ -125,6 +136,7 @@ fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
         BottomNavItem("home", Icons.Default.Home, "Home"),
         BottomNavItem("races", ImageVector.vectorResource(R.drawable.baseline_directions_car_24), "Races"),
+        BottomNavItem("news", Icons.Rounded.Email, "News"),
         BottomNavItem("settings", Icons.Default.Settings, "Settings")
     )
     var selectedItem =  remember { mutableStateOf(items[0]) }
