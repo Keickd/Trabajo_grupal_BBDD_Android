@@ -45,43 +45,8 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmod
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
-    val context = LocalContext.current
     val state = viewModel.homeDataStateFlow.collectAsState()
 
-    val permissionGranted = remember { mutableStateOf(false) }
-
-    // Registro de la solicitud del permiso
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            permissionGranted.value = isGranted
-        }
-    )
-
-    // Si el permiso no ha sido concedido, lo solicitamos
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_MEDIA_IMAGES
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            permissionGranted.value = true
-        }
-    }
-
-    // Ahora manejamos la UI dependiendo del estado del permiso
-    if (permissionGranted.value) {
-        // Permiso concedido, muestra el contenido
-        Text("Permiso concedido, muestra contenido aquí.")
-        // Aquí iría el resto del contenido de tu pantalla
-    } else {
-        // Permiso no concedido
-        Text("Permiso no concedido.")
-    }
-
-    // Continuar con el flujo si el permiso está concedido
     when (val stateValue = state.value) {
         is HomeState.Loading -> LoadingComposable()
         is HomeState.Failure -> FailureComposable()

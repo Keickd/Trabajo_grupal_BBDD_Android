@@ -43,6 +43,8 @@ fun TeamCard(team: Team) {
             .padding(bottom = 20.dp)
             .width(205.dp)) {
 
+
+
             val model =
                 ImageRequest.Builder(LocalContext.current)
                     .data(Uri.parse(team.image))
