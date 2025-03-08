@@ -1,28 +1,40 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModelFactory
@@ -37,48 +49,100 @@ class MainActivity : ComponentActivity() {
         setContent {
             val database = RacingAppDatabase.provideDatabase(applicationContext)
             val homeFactory = HomeViewModelFactory(this, database)
-            val homeViewModel = homeFactory.create(HomeViewModel::class.java)
-
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = "home") {
-                composable("home") {
-                    HomeScreen(viewModel = homeViewModel, navController = navController)
-                }
+            Scaffold(
+                bottomBar = { BottomNavigation(navController) },
 
-                composable("team_form") { backStackEntry ->
-                    val teamFactory = TeamFormViewModelFactory(
-                        context = this@MainActivity,
-                        database = database,
-                        savedStateHandle = backStackEntry.savedStateHandle
-                    )
-                    val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
+                ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                ) {
+                    NavHost(navController = navController, startDestination = "home") {
+                        composable("home") {
+                            val homeViewModel = homeFactory.create(HomeViewModel::class.java)
+                            HomeScreen(viewModel = homeViewModel, navController = navController)
+                        }
 
-                    TeamFormScreen(viewModel = teamViewModel, navController = navController)
-                }
+                        composable("races") {
+                            RacesScreen()
+                        }
 
-                composable("racer_form") { backStackEntry ->
-                    val racerFactory = RacerFormViewModelFactory(
-                        context = this@MainActivity,
-                        database = database,
-                        savedStateHandle = backStackEntry.savedStateHandle
-                    )
-                    val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
+                        composable("settings") {
+                            SettingScreen()
+                        }
 
-                    RacerFormScreen(viewModel = racerViewModel, navController = navController)
-                }
+                        composable("team_form") { backStackEntry ->
+                            val teamFactory = TeamFormViewModelFactory(
+                                context = this@MainActivity,
+                                database = database,
+                                savedStateHandle = backStackEntry.savedStateHandle
+                            )
+                            val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
 
-                composable("track_form") { backStackEntry ->
-                    val trackFactory = TrackFormViewModelFactory(
-                        context = this@MainActivity,
-                        database = database,
-                        savedStateHandle = backStackEntry.savedStateHandle
-                    )
-                    val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+                            TeamFormScreen(viewModel = teamViewModel, navController = navController)
+                        }
 
-                    TrackFormScreen(viewModel = trackViewModel, navController = navController)
+                        composable("racer_form") { backStackEntry ->
+                            val racerFactory = RacerFormViewModelFactory(
+                                context = this@MainActivity,
+                                database = database,
+                                savedStateHandle = backStackEntry.savedStateHandle
+                            )
+                            val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
+
+                            RacerFormScreen(
+                                viewModel = racerViewModel,
+                                navController = navController
+                            )
+                        }
+
+                        composable("track_form") { backStackEntry ->
+                            val trackFactory = TrackFormViewModelFactory(
+                                context = this@MainActivity,
+                                database = database,
+                                savedStateHandle = backStackEntry.savedStateHandle
+                            )
+                            val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+
+                            TrackFormScreen(
+                                viewModel = trackViewModel,
+                                navController = navController
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
+@Composable
+fun BottomNavigation(navController: NavHostController) {
+    val items = listOf(
+        BottomNavItem("home", Icons.Default.Home, "Home"),
+        BottomNavItem("races", ImageVector.vectorResource(R.drawable.baseline_directions_car_24), "Races"),
+        BottomNavItem("settings", Icons.Default.Settings, "Settings")
+    )
+    var selectedItem =  remember { mutableStateOf(items[0]) }
+
+    BottomAppBar{
+        items.forEach {
+            NavigationBarItem(
+                icon = {  Icon(it.icon, contentDescription = it.label) },
+                label = { Text(it.label) },
+                selected = selectedItem.value == it,
+                onClick = {
+                    selectedItem.value = it
+                    navController.navigate(it.route)
+                }
+            )
+        }
+    }
+}
+
+
+data class BottomNavItem(val route: String, val icon: ImageVector, val label: String)
