@@ -13,9 +13,12 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,24 +58,25 @@ class MainActivity : ComponentActivity() {
             val homeFactory = HomeViewModelFactory(this, database)
             val navController = rememberNavController()
 
-            Scaffold(
-                bottomBar = { BottomNavigation(navController) },
+            var isDarkMode = remember { mutableStateOf(false) }
 
-                ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                ) {
-                    NavHost(navController = navController, startDestination = "home") {
-                        composable("home") {
-                            val homeViewModel = homeFactory.create(HomeViewModel::class.java)
-                            HomeScreen(viewModel = homeViewModel, navController = navController)
-                        }
+            MaterialTheme(
+                colorScheme = if (isDarkMode.value) darkColorScheme() else lightColorScheme()
+            ) {
+                Scaffold(
+                    bottomBar = { BottomNavigation(navController) },
 
-                        composable("races") {
-                            RacesScreen()
-                        }
+                    ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                    ) {
+                        NavHost(navController = navController, startDestination = "home") {
+                            composable("home") {
+                                val homeViewModel = homeFactory.create(HomeViewModel::class.java)
+                                HomeScreen(viewModel = homeViewModel, navController = navController)
+                            }
 
                         composable("news") {
                             val newsFactory = NewsViewModelFactory()
@@ -81,47 +85,50 @@ class MainActivity : ComponentActivity() {
                             NewsScreen(newsViewModel, navController)
                         }
 
-                        composable("settings") {
-                            SettingScreen()
-                        }
+                       
 
-                        composable("team_form") { backStackEntry ->
-                            val teamFactory = TeamFormViewModelFactory(
-                                context = this@MainActivity,
-                                database = database,
-                                savedStateHandle = backStackEntry.savedStateHandle
-                            )
-                            val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
+                            composable("settings") {
+                                SettingScreen(isDarkMode)
+                            }
 
-                            TeamFormScreen(viewModel = teamViewModel, navController = navController)
-                        }
+                            composable("team_form") { backStackEntry ->
+                                val teamFactory = TeamFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
 
-                        composable("racer_form") { backStackEntry ->
-                            val racerFactory = RacerFormViewModelFactory(
-                                context = this@MainActivity,
-                                database = database,
-                                savedStateHandle = backStackEntry.savedStateHandle
-                            )
-                            val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
+                                TeamFormScreen(viewModel = teamViewModel, navController = navController)
+                            }
 
-                            RacerFormScreen(
-                                viewModel = racerViewModel,
-                                navController = navController
-                            )
-                        }
+                            composable("racer_form") { backStackEntry ->
+                                val racerFactory = RacerFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
 
-                        composable("track_form") { backStackEntry ->
-                            val trackFactory = TrackFormViewModelFactory(
-                                context = this@MainActivity,
-                                database = database,
-                                savedStateHandle = backStackEntry.savedStateHandle
-                            )
-                            val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+                                RacerFormScreen(
+                                    viewModel = racerViewModel,
+                                    navController = navController
+                                )
+                            }
 
-                            TrackFormScreen(
-                                viewModel = trackViewModel,
-                                navController = navController
-                            )
+                            composable("track_form") { backStackEntry ->
+                                val trackFactory = TrackFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+
+                                TrackFormScreen(
+                                    viewModel = trackViewModel,
+                                    navController = navController
+                                )
+                            }
                         }
                     }
                 }
