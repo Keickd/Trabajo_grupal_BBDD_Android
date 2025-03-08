@@ -78,14 +78,17 @@ class MainActivity : ComponentActivity() {
                                 HomeScreen(viewModel = homeViewModel, navController = navController)
                             }
 
-                        composable("news") {
-                            val newsFactory = NewsViewModelFactory()
-                            val newsViewModel = newsFactory.create(NewsViewModel::class.java)
+                            composable("news") {
+                                val newsFactory = NewsViewModelFactory()
+                                val newsViewModel = newsFactory.create(NewsViewModel::class.java)
 
-                            NewsScreen(newsViewModel, navController)
-                        }
+                                NewsScreen(newsViewModel, navController)
+                            }
 
-                       
+                            composable("races") {
+
+                                RacesScreen()
+                            }
 
                             composable("settings") {
                                 SettingScreen(isDarkMode)
