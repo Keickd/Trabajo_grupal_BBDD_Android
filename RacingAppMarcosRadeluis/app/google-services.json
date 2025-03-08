@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "650216144172",
+    "project_id": "racing-app-2e538",
+    "storage_bucket": "racing-app-2e538.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650216144172:android:826fa0ab10e31eee77c089",
+        "android_client_info": {
+          "package_name": "es.usj.groupapp.marcos.racingappmarcos_radeluis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxMfIubGY5w0dNUKqL0ZOrsvRcBSPdJY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
