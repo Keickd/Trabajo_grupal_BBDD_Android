@@ -10,4 +10,8 @@ class NewsRepositoryImpl(private val newsDataSource: NewsDataSource) : NewsRepos
     override suspend fun getNews(): Flow<List<News>> {
         return newsDataSource.getNews()
     }
+
+    override suspend fun addNews(news: News): Result<String> {
+        return newsDataSource.addNews(news)
+    }
 }

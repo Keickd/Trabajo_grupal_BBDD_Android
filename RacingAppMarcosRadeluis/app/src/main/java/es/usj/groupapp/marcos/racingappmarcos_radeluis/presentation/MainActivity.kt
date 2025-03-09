@@ -29,17 +29,21 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view.NewsScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModelFactory
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
@@ -52,6 +56,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewm
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+       val db = FirebaseFirestore.getInstance()
         enableEdgeToEdge()
         setContent {
             val database = RacingAppDatabase.provideDatabase(applicationContext)
@@ -79,10 +84,19 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("news") {
-                                val newsFactory = NewsViewModelFactory()
+                                val newsFactory = NewsViewModelFactory(db)
                                 val newsViewModel = newsFactory.create(NewsViewModel::class.java)
 
-                                NewsScreen(newsViewModel, navController)
+                                NewsScreen(newsViewModel,{
+                                    navController.navigate("news_form")
+                                }, navController)
+                            }
+
+                            composable("news_form") { backStackEntry ->
+                                val newsFormFactory = NewsFormViewModelFactory(db, savedStateHandle = backStackEntry.savedStateHandle)
+                                val newsFormViewModel = newsFormFactory.create(NewsFormViewModel::class.java)
+
+                                NewsFormScreen(newsFormViewModel, navController)
                             }
 
                             composable("races") {

@@ -1,9 +1,9 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsUseCase
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view.NewsState
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
