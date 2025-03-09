@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,11 +30,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.FailureComposable
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeState
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.LoadingComposable
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
 
 @Composable
 fun NewsScreen(
-    newsViewModel: NewsViewModel, navController: NavController,
+    newsViewModel: NewsViewModel,  onAddNewsClick: () -> Unit, navController: NavController,
 ) {
     val newsState = newsViewModel.newsStateFlow.collectAsState()
 
@@ -52,7 +52,7 @@ fun NewsScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            IconButton(onClick = { }) {
+            IconButton(onClick = onAddNewsClick ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Agregar noticia",
