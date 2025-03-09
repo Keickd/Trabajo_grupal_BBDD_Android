@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
     suspend fun getNews(): Flow<List<News>>
+    suspend fun addNews(news: News): Result<String>
 }

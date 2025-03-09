@@ -5,6 +5,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.News
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class NewsDataSource(private val db: FirebaseFirestore) {
 
@@ -23,5 +24,15 @@ class NewsDataSource(private val db: FirebaseFirestore) {
                 }
             }
         awaitClose { listener.remove() }
+    }
+
+    suspend fun addNews(news: News): Result<String> {
+        return try {
+            val documentReference = db.collection("news").add(news).await()
+
+            Result.success("Noticia añadida con éxito: ${documentReference.id}")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

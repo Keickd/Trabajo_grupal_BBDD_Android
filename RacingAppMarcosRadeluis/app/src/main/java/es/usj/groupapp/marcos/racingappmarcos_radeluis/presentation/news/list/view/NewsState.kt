@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view
 
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.News
 
