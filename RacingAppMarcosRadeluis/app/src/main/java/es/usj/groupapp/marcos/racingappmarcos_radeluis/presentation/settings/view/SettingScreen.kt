@@ -1,5 +1,6 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,20 +15,20 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
-
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(isDarkMode: MutableState<Boolean>) {
+fun SettingScreen(viewModel: SettingViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,9 +59,9 @@ fun SettingScreen(isDarkMode: MutableState<Boolean>) {
                 )
 
                 Switch(
-                    checked = isDarkMode.value,
+                    checked = viewModel.isDarkMode.value,
                     onCheckedChange = {
-                        isDarkMode.value = !isDarkMode.value
+                        viewModel.toggleTheme()
                     })
 
             }
@@ -71,6 +72,7 @@ fun SettingScreen(isDarkMode: MutableState<Boolean>) {
 @Preview
 @Composable
 fun SettingScreenPreview() {
-    val isDarkMode = remember { mutableStateOf(false) }
-    SettingScreen(isDarkMode)
+    val context: Context = LocalContext.current
+    val settingViewModel: SettingViewModel = viewModel(factory = SettingViewModelFactory(context))
+    SettingScreen(settingViewModel)
 }
