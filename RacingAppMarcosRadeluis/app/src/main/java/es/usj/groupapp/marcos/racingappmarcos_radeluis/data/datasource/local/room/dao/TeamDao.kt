@@ -17,7 +17,7 @@ interface TeamDao {
     fun getAllTeams(): Flow<List<TeamEntity>>
 
     @Query("Select * FROM teams where id = :id")
-    suspend fun getTeamById(id: Long): TeamEntity
+    fun getTeamById(id: Long): Flow<TeamEntity>
 
     @Update(onConflict = IGNORE)
     suspend fun updateTeam(teamEntity: TeamEntity)

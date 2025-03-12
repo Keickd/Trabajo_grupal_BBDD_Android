@@ -7,6 +7,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 
@@ -21,14 +22,14 @@ class TrackLocalDatasource(
         return trackDao.getAllTracks().flatMapLatest { trackEntities ->
             flow {
                 val tracks = trackEntities.map { trackEntity ->
-                    val countryEntity = countryDao.getCountryById(trackEntity.country_id)
-                    trackMapper.mapToDomain(trackEntity, countryEntity)
+                    val countryEntity = countryDao.getCountryById(trackEntity.country_id).firstOrNull()
+                        trackMapper.mapToDomain(trackEntity, countryEntity!!)
                 }
-
                 emit(tracks)
             }
         }
     }
+
 
     suspend fun insertTrack(track: Track) {
         trackDao.insertTrack(trackMapper.mapToEntity(track))

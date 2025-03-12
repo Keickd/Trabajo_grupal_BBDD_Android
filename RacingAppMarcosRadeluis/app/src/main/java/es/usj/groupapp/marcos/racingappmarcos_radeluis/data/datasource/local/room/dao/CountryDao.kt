@@ -17,7 +17,7 @@ interface CountryDao {
     fun getAllCountries(): Flow<List<CountryEntity>>
 
     @Query("Select * FROM countries where id = :id")
-    suspend fun getCountryById(id: Long): CountryEntity
+    fun getCountryById(id: Long): Flow<CountryEntity>
 
     @Update
     suspend fun updateCountry(countryEntity: CountryEntity)

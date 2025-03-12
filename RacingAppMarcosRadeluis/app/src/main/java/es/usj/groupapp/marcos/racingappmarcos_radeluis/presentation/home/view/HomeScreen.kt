@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
@@ -35,7 +37,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmod
 
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
+fun HomeScreen(viewModel: HomeViewModel, navController: NavHostController) {
     val state = viewModel.homeDataStateFlow.collectAsState()
 
     when (val stateValue = state.value) {
@@ -56,7 +58,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
                     when (data.teams) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
-                        is HomeListState.Success -> TeamsList(data.teams.data, {
+                        is HomeListState.Success -> TeamsList(data.teams.data, navController, {
                             navController.navigate("team_form")
                         })
                     }
@@ -92,14 +94,6 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController) {
             }
         }
     }
-}
-
-
-fun hasStoragePermission(context: Context): Boolean {
-    return ContextCompat.checkSelfPermission(
-        context,
-        android.Manifest.permission.READ_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
 }
 
 //////////////////////////////////////////PREVIEWS//////////////////////////////////////////
@@ -184,7 +178,7 @@ fun HomeScreenPreview() {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item { TeamsList(teamsList, {}) }
+        item { TeamsList(teamsList, rememberNavController(),{}) }
         item { RacersList(racersList, {}) }
         item { TracksList(trackList, {}) }
     }

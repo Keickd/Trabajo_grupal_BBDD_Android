@@ -34,13 +34,12 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmod
 import kotlinx.coroutines.launch
 
 @Composable
-fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
+fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, teamId: Long?) {
     val teamsState by viewModel.state.collectAsState()
     val teamName by viewModel.teamName.collectAsState()
     val countryId by viewModel.countryId.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-
 
     val context = LocalContext.current
 
@@ -56,18 +55,20 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
         }
     }
 
-    val countries = if (teamsState is TeamState.Success) {
-        (teamsState as TeamState.Success).countries
-    } else {
-        emptyList()
+    var countries = emptyList<Country>()
+
+    if (teamsState is TeamState.Success) {
+        countries = (teamsState as TeamState.Success).countries
+    } else if (teamsState is TeamState.TeamDetail){
+        countries = (teamsState as TeamState.TeamDetail).countries
     }
 
     val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
 
+
     val isButtonEnabled by remember(teamName, countryId, imageUri) {
         derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
     }
-
 
     Column(
         modifier = Modifier
@@ -80,7 +81,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
 
         when (teamsState) {
             is TeamState.Error -> FailureComposable()
-            TeamState.Loading -> LoadingComposable()
+            is TeamState.Loading -> LoadingComposable()
             is TeamState.Success -> {
                 Text(
                     text = "Create a new team",
@@ -204,21 +205,133 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.addTeam()
+                            if (teamId == null) {
+                                viewModel.addTeam()
+                            } else {
+                                viewModel.updateTeam(teamId)
+                            }
                             navController.popBackStack()
                         }
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
                 ) {
-                    Text("Add Team", style = MaterialTheme.typography.headlineMedium)
+                    Text( "Add Team" , style = MaterialTheme.typography.headlineMedium)
+                }
+            }
+            is TeamState.TeamDetail -> {
+                val imageFromTeam = (teamsState as TeamState.TeamDetail).team.image
+                Text(
+                    text = "Edit team",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 25.dp)
+                )
+
+                OutlinedTextField(
+                    value = teamName,
+                    onValueChange = { viewModel.updateTeamName(it) },
+                    label = { Text("Team name", style = MaterialTheme.typography.headlineSmall) },
+                    textStyle = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Box {
+                    OutlinedTextField(
+                        value = selectedOption.name,
+                        onValueChange = {},
+                        label = { Text("Country", style = MaterialTheme.typography.headlineSmall) },
+                        textStyle = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "options",
+                                    modifier = Modifier.size(50.dp)
+                                )
+                            }
+                        },
+                        leadingIcon = {
+                            selectedOption.image.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                                FlagImage(
+                                    flagPath = imageUrl,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                )
+                            }
+                        }
+                    )
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        countries.forEach { country ->
+                            DropdownMenuItem(
+                                text = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        FlagImage(
+                                            flagPath = country.image,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterVertically)
+                                                .size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        Text(country.name, style = MaterialTheme.typography.headlineMedium)
+                                    }
+                                },
+                                onClick = {
+                                    viewModel.updateCountryId(country.id)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
 
+                Spacer(modifier = Modifier.height(30.dp))
 
+                imageFromTeam.let { uri ->
+                    Box(
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(12.dp))
+
+                            .background(Color.LightGray)
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = "Selected Image",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.updateTeam(teamId!!)
+                            navController.popBackStack()
+                        }
+                    },
+                    enabled = isButtonEnabled,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
+                ) {
+                    Text(if (teamId == null) "Add Team" else "Update Team", style = MaterialTheme.typography.headlineMedium)
+                }
+            }
             }
         }
     }
-}
+
 
 
 

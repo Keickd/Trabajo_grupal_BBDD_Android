@@ -21,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.cards.TeamCard
 
 @Composable
-fun TeamsList(teams: List<Team>, onAddTeamClick: () -> Unit) {
+fun TeamsList(teams: List<Team>, navController: NavHostController, onAddTeamClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -58,7 +60,7 @@ fun TeamsList(teams: List<Team>, onAddTeamClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(teams) { team ->
-                TeamCard(team = team)
+                TeamCard(team = team, navController)
             }
         }
     }
@@ -73,5 +75,5 @@ fun TeamListPreview() {
         Team(id = 1234, name = "Escudería 2", image = "", country = Country(id = 2, name = "Norway", image = "us.svg")),
         Team(id = 1235, name = "Escudería 3",  image = "", country = Country(id = 3, name = "France", image = "fr.svg"))
     )
-    TeamsList(list, { })
+    TeamsList(list, rememberNavController(), { })
 }

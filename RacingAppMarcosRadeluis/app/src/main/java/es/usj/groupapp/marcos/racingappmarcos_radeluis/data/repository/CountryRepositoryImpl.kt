@@ -14,4 +14,8 @@ class CountryRepositoryImpl(private val countryLocalDataSource: CountryLocalData
     override suspend fun getAllCountries(): Flow<List<Country>> {
         return countryLocalDataSource.getAllCountries()
     }
+
+    override suspend fun getCountryById(id: Long): Flow<Country> {
+        return countryLocalDataSource.getCountryById(id)
+    }
 }

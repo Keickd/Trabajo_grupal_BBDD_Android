@@ -1,6 +1,7 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -121,7 +122,22 @@ class MainActivity() : ComponentActivity() {
                                 )
                                 val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
 
-                                TeamFormScreen(viewModel = teamViewModel, navController = navController)
+                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = null)
+                            }
+
+                            composable("team_form/{teamId}") { backStackEntry ->
+                                val teamId = backStackEntry.arguments?.getString("teamId")?.toLongOrNull()
+                                Log.d("Navigation", "teamId recibido: $teamId")
+                                backStackEntry.savedStateHandle["teamId"] = teamId
+
+                                val teamFactory = TeamFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
+
+                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = teamId)
                             }
 
                             composable("racer_form") { backStackEntry ->

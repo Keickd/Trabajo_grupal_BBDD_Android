@@ -6,6 +6,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.TeamD
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 
@@ -20,15 +21,30 @@ class TeamLocalDatasource(
         return teamDao.getAllTeams().flatMapLatest { teamEntities ->
             flow {
                 val teams = teamEntities.map { teamEntity ->
-                    val countryEntity = countryDao.getCountryById(teamEntity.country_id)
-                    teamMapper.mapToDomain(teamEntity, countryEntity)
+                    val countryEntity = countryDao.getCountryById(teamEntity.country_id).firstOrNull()
+                    teamMapper.mapToDomain(teamEntity, countryEntity!!)
                 }
                 emit(teams)
             }
         }
     }
 
+
     suspend fun insertTeam(team: Team) {
         teamDao.insertTeam(teamMapper.mapToEntity(team))
+    }
+
+    fun getTeamById(id: Long): Flow<Team> {
+        return teamDao.getTeamById(id).flatMapLatest { teamEntity ->
+            flow {
+                val countryEntity = countryDao.getCountryById(teamEntity.country_id).firstOrNull()
+                emit(teamMapper.mapToDomain(teamEntity, countryEntity!!))
+            }
+        }
+    }
+
+
+    suspend fun updateTeam(team: Team){
+        teamDao.updateTeam(teamMapper.mapToEntity(team))
     }
 }
