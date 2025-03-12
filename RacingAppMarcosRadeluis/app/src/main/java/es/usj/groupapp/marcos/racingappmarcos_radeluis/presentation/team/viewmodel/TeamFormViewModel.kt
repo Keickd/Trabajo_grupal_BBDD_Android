@@ -6,9 +6,14 @@ import androidx.lifecycle.viewModelScope
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +23,10 @@ import kotlinx.coroutines.launch
 
 class TeamFormViewModel(
     private val getAllCountriesUseCase: GetAllCountriesUseCase,
+    private val getCountryByIdUseCase: GetCountryByIdUseCase,
     private val insertTeamUseCase: InsertTeamUseCase,
+    private val getTeamByIdUseCase: GetTeamByIdUseCase,
+    private val updateTeamUseCase: UpdateTeamUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -36,18 +44,16 @@ class TeamFormViewModel(
     private val _teamImageUri = MutableStateFlow(savedStateHandle.get<String>("team_image") ?: "")
     val teamImage: StateFlow<String> = _teamImageUri
 
+    private val teamId: Long? = savedStateHandle.get<Long?>("teamId")
 
     init {
-        viewModelScope.launch {
-            runCatching {
-                getAllCountriesUseCase.getAllCountries().collect {
-                    _state.value = TeamState.Success(it)
-                }
-            }.onFailure {
-                _state.value = TeamState.Error(it.message ?: "Unknown error")
-            }
+        if (teamId != null) {
+            loadTeam(teamId)
+        } else {
+            loadCountries()
         }
     }
+
 
     fun updateTeamName(newName: String) {
         _teamName.value = newName
@@ -60,7 +66,6 @@ class TeamFormViewModel(
     fun updateTeamImage(imageUri: String) {
         _teamImageUri.value = imageUri
     }
-
 
 
     fun addTeam() {
@@ -91,6 +96,59 @@ class TeamFormViewModel(
                 insertTeamUseCase.insertTeam(team)
             } catch (e: Exception) {
                 _state.value = TeamState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun loadTeam(teamId: Long) {
+        viewModelScope.launch {
+            try {
+                val teamDeferred = async { getTeamByIdUseCase.getTeamById(teamId).firstOrNull() }
+                val countriesDeferred = async { getAllCountriesUseCase.getAllCountries().firstOrNull() }
+
+                val team = teamDeferred.await()
+                val countries = countriesDeferred.await()
+
+                if (team != null && countries != null) {
+                    _teamName.value = team.name
+                    _countryId.value = team.country.id
+                    _teamImageUri.value = team.image
+
+                    _state.value = TeamState.TeamDetail(team, countries)
+                } else {
+                    _state.value = TeamState.Error("No se encontraron datos")
+                }
+
+            } catch (e: Exception) {
+                _state.value = TeamState.Error("Error al cargar los datos: ${e.message}")
+            }
+        }
+    }
+
+
+
+    fun loadCountries() {
+        viewModelScope.launch {
+            getAllCountriesUseCase.getAllCountries().collect {
+                _state.value = TeamState.Success(it)
+            }
+        }
+    }
+
+
+    fun updateTeam(teamId: Long) {
+        viewModelScope.launch {
+            _countryId.value?.let { countryId ->
+                getCountryByIdUseCase.getCountryById(countryId).collect { country ->
+                    val teamUpdated = Team(
+                        id = teamId,
+                        name = _teamName.value,
+                        country = country,
+                        image = _teamImageUri.value
+                    )
+
+                    updateTeamUseCase.updateTeam(teamUpdated)
+                }
             }
         }
     }

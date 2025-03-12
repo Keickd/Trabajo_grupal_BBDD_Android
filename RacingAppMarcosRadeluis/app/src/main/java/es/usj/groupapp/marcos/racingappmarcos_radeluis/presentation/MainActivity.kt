@@ -1,6 +1,7 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,18 +36,12 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.view.NewsScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.viewmodel.NewsViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModelFactory
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModelFactory
@@ -127,7 +122,22 @@ class MainActivity() : ComponentActivity() {
                                 )
                                 val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
 
-                                TeamFormScreen(viewModel = teamViewModel, navController = navController)
+                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = null)
+                            }
+
+                            composable("team_form/{teamId}") { backStackEntry ->
+                                val teamId = backStackEntry.arguments?.getString("teamId")?.toLongOrNull()
+                                Log.d("Navigation", "teamId recibido: $teamId")
+                                backStackEntry.savedStateHandle["teamId"] = teamId
+
+                                val teamFactory = TeamFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
+
+                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = teamId)
                             }
 
                             composable("racer_form") { backStackEntry ->

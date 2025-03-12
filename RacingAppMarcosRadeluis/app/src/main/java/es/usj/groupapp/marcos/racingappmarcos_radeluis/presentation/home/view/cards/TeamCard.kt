@@ -3,7 +3,7 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.c
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
@@ -34,42 +36,23 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 
-
 @Composable
-fun TeamCard(team: Team) {
-    Card( elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),) {
-        Column(modifier = Modifier.align(Alignment.CenterHorizontally)
-            .background(color = Color(0xF5F5DC))
-            .padding(bottom = 20.dp)
-            .width(205.dp)) {
-
-
-
-            val model =
-                ImageRequest.Builder(LocalContext.current)
-                    .data(Uri.parse(team.image))
-                    .placeholder(R.drawable.team)
-                    .crossfade(true)
-                    .build()
-
-
-            Image(
-                painter = rememberAsyncImagePainter(model),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .size(120.dp),
-                contentScale = ContentScale.Crop
-            )
-
-            /*
-            *   val context = LocalContext.current
-            val accessibleUri = getAccessibleUri(context, Uri.parse(team.image))
-
-            val model = ImageRequest.Builder(context)
-                .data(accessibleUri ?: R.drawable.team)
+fun TeamCard(team: Team, navController: NavHostController) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier.clickable {
+            navController.navigate("team_form/${team.id}")
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .background(color = Color(0xF5F5DC))
+                .padding(bottom = 20.dp)
+                .width(205.dp)
+        ) {
+            val model = ImageRequest.Builder(LocalContext.current)
+                .data(Uri.parse(team.image))
                 .placeholder(R.drawable.team)
                 .crossfade(true)
                 .build()
@@ -85,19 +68,23 @@ fun TeamCard(team: Team) {
                 contentScale = ContentScale.Crop
             )
 
-            * */
-
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = team.name,
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 25.sp,
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp).fillMaxWidth()
+                modifier = Modifier
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp).fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+            ) {
                 Text(
                     text = team.country.name,
                     style = MaterialTheme.typography.bodyLarge,
@@ -127,6 +114,6 @@ fun TeamCardPreview() {
             name = "Escudería 1",
             image = "",
             country = Country(id = 4, name = "Spain", image = "es.svg")
-        )
+        ),  rememberNavController()
     )
 }

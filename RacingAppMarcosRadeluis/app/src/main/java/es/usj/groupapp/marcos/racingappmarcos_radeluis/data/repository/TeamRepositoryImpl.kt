@@ -13,4 +13,12 @@ class TeamRepositoryImpl(private val teamLocalDatasource: TeamLocalDatasource): 
     override suspend fun insertTeam(team: Team) {
         teamLocalDatasource.insertTeam(team)
     }
+
+    override suspend fun getTeamById(id: Long): Flow<Team> {
+        return teamLocalDatasource.getTeamById(id)
+    }
+
+    override suspend fun updateTeam(team: Team) {
+        teamLocalDatasource.updateTeam(team)
+    }
 }

@@ -12,7 +12,10 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
 
 class TeamFormViewModelFactory(
     private val context: Context,
@@ -36,6 +39,9 @@ class TeamFormViewModelFactory(
         if (modelClass.isAssignableFrom(TeamFormViewModel::class.java)) {
             return TeamFormViewModel(
                 getAllCountriesUseCase = GetAllCountriesUseCase(countryRepositoryImpl),
+                getCountryByIdUseCase = GetCountryByIdUseCase(countryRepositoryImpl),
+                getTeamByIdUseCase = GetTeamByIdUseCase(teamRepositoryImpl),
+                updateTeamUseCase = UpdateTeamUseCase(teamRepositoryImpl),
                 insertTeamUseCase = InsertTeamUseCase(teamRepositoryImpl),
                 savedStateHandle = savedStateHandle
             ) as T

@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface CountryRepository {
     suspend fun insertAndGetCountries(): List<Country>
     suspend fun getAllCountries(): Flow<List<Country>>
+    suspend fun getCountryById(id: Long): Flow<Country>
 }
 

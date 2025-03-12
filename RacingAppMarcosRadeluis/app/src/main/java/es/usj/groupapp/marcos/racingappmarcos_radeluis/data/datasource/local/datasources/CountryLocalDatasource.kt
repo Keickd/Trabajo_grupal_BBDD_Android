@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.InputStreamReader
 
@@ -48,16 +49,18 @@ class CountryLocalDataSource(
     }
 
     fun getAllCountries(): Flow<List<Country>> {
-        return countryDao.getAllCountries().flatMapLatest { countryEntities ->
-            flow {
-                val countries = countryEntities.map { countryEntity ->
-                    val countryEntity = countryDao.getCountryById(countryEntity.id)
-                    countryMapper.mapToDomain(countryEntity)
-                }
-
-                emit(countries)
+        return countryDao.getAllCountries().map { countryEntities ->
+            countryEntities.map { countryEntity ->
+                countryMapper.mapToDomain(countryEntity)
             }
         }
     }
 
+
+    suspend fun getCountryById(id: Long): Flow<Country> {
+        return countryDao.getCountryById(id)
+            .map { countryEntity ->
+                countryEntity.let { countryMapper.mapToDomain(it) }
+            }
+    }
 }
