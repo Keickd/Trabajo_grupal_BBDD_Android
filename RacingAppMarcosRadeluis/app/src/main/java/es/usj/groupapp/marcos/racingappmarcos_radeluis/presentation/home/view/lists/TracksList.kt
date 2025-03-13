@@ -21,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.cards.TrackCard
 
 @Composable
-fun TracksList(tracks: List<Track>, onAddTrackClick: () -> Unit) {
+fun TracksList(tracks: List<Track>, navController: NavHostController,onAddTrackClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -58,7 +60,7 @@ fun TracksList(tracks: List<Track>, onAddTrackClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(tracks) { track ->
-                TrackCard(track = track)
+                TrackCard(track = track, navController)
             }
         }
     }
@@ -97,5 +99,5 @@ fun TracksListPreview() {
             country = Country(id = 1, name = "Italy", image = "it.svg")
         ),)
 
-    TracksList(list, {})
+    TracksList(list, rememberNavController(),{})
 }

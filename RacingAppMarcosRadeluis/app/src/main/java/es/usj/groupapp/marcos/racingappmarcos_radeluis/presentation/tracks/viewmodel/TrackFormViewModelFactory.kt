@@ -12,7 +12,10 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TrackRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetTrackByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.InsertTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.UpdateTrackUseCase
 
 
 class TrackFormViewModelFactory(
@@ -37,7 +40,10 @@ class TrackFormViewModelFactory(
         if (modelClass.isAssignableFrom(TrackFormViewModel::class.java)) {
             return TrackFormViewModel(
                 getAllCountriesUseCase = GetAllCountriesUseCase(countryRepositoryImpl),
+                getCountryByIdUseCase = GetCountryByIdUseCase(countryRepositoryImpl),
+                getTrackByIdUseCase = GetTrackByIdUseCase(trackRepositoryImpl),
                 insertTrackUseCase = InsertTrackUseCase(trackRepositoryImpl),
+                updateTrackUseCase = UpdateTrackUseCase(trackRepositoryImpl),
                 savedStateHandle = savedStateHandle
             ) as T
         }

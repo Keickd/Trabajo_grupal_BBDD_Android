@@ -17,7 +17,7 @@ interface TrackDao {
     fun getAllTracks(): Flow<List<TrackEntity>>
 
     @Query("Select * FROM tracks where id = :id")
-    suspend fun getTeamById(id: Long): TrackEntity
+    fun getTrackById(id: Long): Flow<TrackEntity>
 
     @Update(onConflict = IGNORE)
     suspend fun updateTrack(trackEntity: TrackEntity)

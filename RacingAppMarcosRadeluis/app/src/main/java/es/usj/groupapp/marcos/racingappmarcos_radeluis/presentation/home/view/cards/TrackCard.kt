@@ -3,6 +3,7 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.c
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
@@ -36,8 +39,11 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagIm
 
 
 @Composable
-fun TrackCard(track: Track) {
-    Card( elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),) {
+fun TrackCard(track: Track, navController: NavHostController) {
+    Card( elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier.clickable {
+            navController.navigate("track_form/${track.id}")
+        }) {
         Column(modifier = Modifier.align(Alignment.CenterHorizontally)
             .background(color = Color(0xF5F5DC))
             .padding(bottom = 20.dp)
@@ -112,23 +118,6 @@ fun TrackCard(track: Track) {
                 )
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            ) {
-                Text(
-                    text = track.country.name,
-                    fontSize = 23.sp,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-
-                Spacer(modifier = Modifier.width(15.dp))
-
-                FlagImage(
-                    flagPath = "flags/${track.country.image}",
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
             Text(
                 text = track.distance.toString() + " km",
                 fontSize = 23.sp,
@@ -152,6 +141,7 @@ fun TrackCardPreview() {
             distance = 8.65,
             image = "",
             country = Country(id = 1, name = "Italy", image = "it.svg")
-        )
+        ),
+         rememberNavController()
     )
 }
