@@ -127,8 +127,8 @@ class TeamFormViewModel(
 
     fun loadCountries() {
         viewModelScope.launch {
-            getAllCountriesUseCase.getAllCountries().collect {
-                _state.value = TeamState.Success(it)
+            getAllCountriesUseCase.getAllCountries().collect { countries ->
+                _state.value = TeamState.Success(countries ?: emptyList())
             }
         }
     }

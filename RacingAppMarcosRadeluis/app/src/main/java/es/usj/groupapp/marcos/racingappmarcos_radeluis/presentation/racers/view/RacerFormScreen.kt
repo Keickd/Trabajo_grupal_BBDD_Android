@@ -493,27 +493,6 @@ fun FailureComposable() {
     }
 }
 
-//////////////////////////////////////////PREVIEW//////////////////////////////////////////
-/*
-@Composable
-@Preview(showBackground = true)
-fun PreviewTeamFormScreen() {
-
-    val fakeViewModel = object : TeamFormViewModel(GetAllCountriesUseCase()) {
-        override val state: StateFlow<TeamState> = MutableStateFlow(
-            TeamState.Success(
-                countries = listOf(
-                    Country(1, "Spain", ""),
-                    Country(2, "France", ""),
-                    Country(3, "Germany", "")
-                )
-            )
-        )
-    }
-    TeamFormScreen(viewModel = fakeViewModel)
-}
-*/
-
 //////////////////////////////////////////PREVIEW GENERAL//////////////////////////////////////////
 
 @Preview(showBackground = true)

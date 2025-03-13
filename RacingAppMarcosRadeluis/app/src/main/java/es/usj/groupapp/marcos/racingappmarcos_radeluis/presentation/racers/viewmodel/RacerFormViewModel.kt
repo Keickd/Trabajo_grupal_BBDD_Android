@@ -92,24 +92,32 @@ class RacerFormViewModel(
                 val racer = getRacerByIdUseCase.getRacerById(racerId).firstOrNull()
                     ?: throw Exception("Racer not found")
 
-                val countriesDeferred = async { getAllCountriesUseCase.getAllCountries().firstOrNull() }
-                val teamsDeferred = async { getAllTeamsUsecase.getAllTeams().firstOrNull() }
+                // Evitamos cargar los países y equipos si ya están cargados
+                if (_state.value !is RacerState.Success) {
+                    val countriesDeferred = async { getAllCountriesUseCase.getAllCountries().firstOrNull() }
+                    val teamsDeferred = async { getAllTeamsUsecase.getAllTeams().firstOrNull() }
 
-                val countries = countriesDeferred.await() ?: throw Exception("Countries not found")
-                val teams = teamsDeferred.await() ?: throw Exception("Teams not found")
+                    val countries = countriesDeferred.await() ?: throw Exception("Countries not found")
+                    val teams = teamsDeferred.await() ?: throw Exception("Teams not found")
+
+                    _state.value = RacerState.RacerDetail(racer, countries, teams)
+                } else {
+                    // Solo actualizamos el racer si ya se cargaron países y equipos
+                    val currentState = _state.value as RacerState.Success
+                    _state.value = RacerState.RacerDetail(racer, currentState.countries, currentState.teams)
+                }
 
                 _racerName.value = racer.name
                 _racerAge.value = racer.age.toString()
                 _racerImageUri.value = racer.image
                 _countryId.value = racer.country.id
                 _teamId.value = racer.team.id
-
-                _state.value = RacerState.RacerDetail(racer, countries, teams)
             }.onFailure {
                 _state.value = RacerState.Error(it.message ?: "Unknown error")
             }
         }
     }
+
 
     fun addRacer() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -156,6 +164,8 @@ class RacerFormViewModel(
     }
 
     fun loadCountriesAndTeams() {
+        if (_state.value is RacerState.Success) return // Si ya está cargado, no hacemos nada
+
         viewModelScope.launch {
             runCatching {
                 val countriesDeferred = async { getAllCountriesUseCase.getAllCountries().first() }

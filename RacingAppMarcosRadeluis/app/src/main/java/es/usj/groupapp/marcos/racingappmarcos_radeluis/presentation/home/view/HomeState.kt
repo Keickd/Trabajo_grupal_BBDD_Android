@@ -6,17 +6,13 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 
 sealed class HomeState {
     object Loading : HomeState()
-    data class Data(
-        val racers: HomeListState<List<Racer>>,
-        val tracks: HomeListState<List<Track>>,
-        val teams: HomeListState<List<Team>>
-    ) : HomeState() {
-        fun update(
-            racers: HomeListState<List<Racer>> = this.racers,
-            tracks: HomeListState<List<Track>> = this.tracks,
-            teams: HomeListState<List<Team>> = this.teams
-        ): Data = Data(racers, tracks, teams)
-    }
+
+    data class Success(
+        val racers: List<Racer>,
+        val tracks: List<Track>,
+        val teams: List<Team>
+    ) : HomeState()
+
     data class Failure(val exception: Throwable) : HomeState()
 }
 
