@@ -15,8 +15,12 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRe
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RacerRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.InsertRacerUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.UpdateRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetAllTeamsUsecase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 
 
 class RacerFormViewModelFactory(
@@ -45,8 +49,12 @@ class RacerFormViewModelFactory(
         if (modelClass.isAssignableFrom(RacerFormViewModel::class.java)) {
             return RacerFormViewModel(
                 getAllCountriesUseCase = GetAllCountriesUseCase(countryRepositoryImpl),
+                getCountryByIdUseCase = GetCountryByIdUseCase(countryRepositoryImpl),
                 getAllTeamsUsecase = GetAllTeamsUsecase(teamRepositoryImpl),
+                getTeamByIdUseCase = GetTeamByIdUseCase(teamRepositoryImpl),
+                getRacerByIdUseCase = GetRacerByIdUseCase(racerRepositoryImpl),
                 insertRacerUseCase = InsertRacerUseCase(racerRepositoryImpl),
+                updateRacerUseCase = UpdateRacerUseCase(racerRepositoryImpl),
                 savedStateHandle = savedStateHandle
             ) as T
         }

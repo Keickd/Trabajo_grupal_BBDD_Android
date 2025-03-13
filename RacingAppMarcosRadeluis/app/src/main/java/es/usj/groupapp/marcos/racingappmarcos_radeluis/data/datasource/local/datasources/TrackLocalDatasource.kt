@@ -30,8 +30,11 @@ class TrackLocalDatasource(
         }
     }
 
-
     suspend fun insertTrack(track: Track) {
         trackDao.insertTrack(trackMapper.mapToEntity(track))
+    }
+
+    suspend fun updateTrack(track: Track){
+        trackDao.updateTrack(trackMapper.mapToEntity(track))
     }
 }

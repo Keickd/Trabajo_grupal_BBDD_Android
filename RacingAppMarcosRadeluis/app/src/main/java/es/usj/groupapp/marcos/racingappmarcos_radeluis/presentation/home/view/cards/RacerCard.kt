@@ -3,6 +3,7 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.c
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
@@ -37,8 +40,12 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagIm
 
 
 @Composable
-fun RacerCard(racer: Racer) {
-    Card( elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),) {
+fun RacerCard(racer: Racer, navController: NavHostController) {
+    Card( elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier.clickable {
+            navController.navigate("racer_form/${racer.id}")
+        }
+        ) {
         Column(modifier = Modifier.align(Alignment.CenterHorizontally)
             .background(color = Color(0xF5F5DC))
             .padding(bottom = 20.dp)
@@ -147,6 +154,6 @@ fun RacerCardPreview() {
             image = "",
             team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg")
-        )
+        ), rememberNavController()
     )
 }

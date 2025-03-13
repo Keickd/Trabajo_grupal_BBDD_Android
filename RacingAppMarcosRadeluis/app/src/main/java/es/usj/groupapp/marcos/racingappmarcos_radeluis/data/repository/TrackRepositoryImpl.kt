@@ -15,5 +15,9 @@ class TrackRepositoryImpl(private val trackLocalDatasource: TrackLocalDatasource
     override suspend fun insertTrack(track: Track) {
         trackLocalDatasource.insertTrack(track)
     }
+
+    override suspend fun updateTrack(track: Track) {
+        trackLocalDatasource.updateTrack(track)
+    }
 }
 

@@ -18,7 +18,7 @@ interface RacerDao {
     fun getAllRacers(): Flow<List<RacerEntity>>
 
     @Query("Select * FROM racers where id = :id")
-    suspend fun getRacerById(id: Long): RacerEntity
+    fun getRacerById(id: Long): Flow<RacerEntity>
 
     @Update(onConflict = IGNORE)
     suspend fun updateRacer(racerEntity: RacerEntity)

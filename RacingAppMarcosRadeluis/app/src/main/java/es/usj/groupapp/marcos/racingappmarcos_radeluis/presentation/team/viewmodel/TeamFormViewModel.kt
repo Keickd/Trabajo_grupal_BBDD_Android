@@ -125,8 +125,6 @@ class TeamFormViewModel(
         }
     }
 
-
-
     fun loadCountries() {
         viewModelScope.launch {
             getAllCountriesUseCase.getAllCountries().collect {
@@ -134,7 +132,6 @@ class TeamFormViewModel(
             }
         }
     }
-
 
     fun updateTeam(teamId: Long) {
         viewModelScope.launch {
