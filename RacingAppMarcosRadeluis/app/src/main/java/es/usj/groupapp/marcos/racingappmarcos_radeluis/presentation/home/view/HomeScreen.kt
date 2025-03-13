@@ -72,7 +72,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavHostController) {
                     when (data.racers) {
                         is HomeListState.Loading -> LoadingComposable()
                         is HomeListState.Failure -> FailureComposable()
-                        is HomeListState.Success -> RacersList(data.racers.data, {
+                        is HomeListState.Success -> RacersList(data.racers.data, navController, {
                             navController.navigate("racer_form")
                         })
                     }
@@ -179,7 +179,7 @@ fun HomeScreenPreview() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { TeamsList(teamsList, rememberNavController(),{}) }
-        item { RacersList(racersList, {}) }
+        item { RacersList(racersList, rememberNavController(), {}) }
         item { TracksList(trackList, {}) }
     }
 }

@@ -325,7 +325,7 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
                     enabled = isButtonEnabled,
                     modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
                 ) {
-                    Text(if (teamId == null) "Add Team" else "Update Team", style = MaterialTheme.typography.headlineMedium)
+                    Text("Update Team", style = MaterialTheme.typography.headlineMedium)
                 }
             }
             }

@@ -8,5 +8,4 @@ sealed class TeamState {
     data class Success(val countries: List<Country>) : TeamState()
     data class Error(val message: String) : TeamState()
     data class TeamDetail(val team: Team, val countries: List<Country>) : TeamState()
-
 }

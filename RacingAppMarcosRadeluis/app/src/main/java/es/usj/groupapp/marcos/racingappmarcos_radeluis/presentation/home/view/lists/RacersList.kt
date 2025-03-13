@@ -21,13 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.cards.RacerCard
 
 @Composable
-fun RacersList(racers: List<Racer>, onAddRacerClick: () -> Unit) {
+fun RacersList(racers: List<Racer>, navController: NavHostController, onAddRacerClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -59,7 +61,7 @@ fun RacersList(racers: List<Racer>, onAddRacerClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(racers) { racer ->
-                RacerCard(racer = racer)
+                RacerCard(racer = racer, navController)
             }
         }
     }
@@ -99,5 +101,5 @@ fun RacersListPreview() {
             team = Team(id = 1, name = "USJ",  image = "", country = Country(id = 1, name = "Spain", image = "es.svg")),
             country = Country(id = 1, name = "Spain", image = "es.svg"),),
     )
-    RacersList(list, {})
+    RacersList(list, rememberNavController(),{})
 }

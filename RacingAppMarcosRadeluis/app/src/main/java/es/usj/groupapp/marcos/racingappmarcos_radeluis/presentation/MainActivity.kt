@@ -127,7 +127,6 @@ class MainActivity() : ComponentActivity() {
 
                             composable("team_form/{teamId}") { backStackEntry ->
                                 val teamId = backStackEntry.arguments?.getString("teamId")?.toLongOrNull()
-                                Log.d("Navigation", "teamId recibido: $teamId")
                                 backStackEntry.savedStateHandle["teamId"] = teamId
 
                                 val teamFactory = TeamFormViewModelFactory(
@@ -150,7 +149,26 @@ class MainActivity() : ComponentActivity() {
 
                                 RacerFormScreen(
                                     viewModel = racerViewModel,
-                                    navController = navController
+                                    navController = navController,
+                                    racerId = null,
+                                )
+                            }
+
+                            composable("racer_form/{racerId}") { backStackEntry ->
+                                val racerId = backStackEntry.arguments?.getString("racerId")?.toLongOrNull()
+                                backStackEntry.savedStateHandle["racerId"] = racerId
+
+                                val racerFactory = RacerFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
+
+                                RacerFormScreen(
+                                    viewModel = racerViewModel,
+                                    navController = navController,
+                                    racerId = racerId,
                                 )
                             }
 
