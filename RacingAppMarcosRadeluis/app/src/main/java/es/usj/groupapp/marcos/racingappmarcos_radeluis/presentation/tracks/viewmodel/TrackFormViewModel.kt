@@ -4,21 +4,31 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetTrackByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.InsertTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.UpdateTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.TrackState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
 class TrackFormViewModel(
     private val getAllCountriesUseCase: GetAllCountriesUseCase,
+    private val getCountryByIdUseCase: GetCountryByIdUseCase,
+    private val getTrackByIdUseCase: GetTrackByIdUseCase,
     private val insertTrackUseCase: InsertTrackUseCase,
+    private val updateTrackUseCase: UpdateTrackUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -39,8 +49,18 @@ class TrackFormViewModel(
     private val _trackImageUri = MutableStateFlow(savedStateHandle.get<String>("track_image") ?: "")
     val trackImage: StateFlow<String> = _trackImageUri
 
+    private val trackId: Long? = savedStateHandle.get<Long?>("trackId")
 
     init {
+        if (trackId != null) {
+            loadTrack(trackId)
+        } else {
+            loadCountries()
+        }
+    }
+
+
+   /* init {
         viewModelScope.launch {
             runCatching {
                 getAllCountriesUseCase.getAllCountries().collect {
@@ -50,7 +70,7 @@ class TrackFormViewModel(
                 _state.value = TrackState.Error(it.message ?: "Unknown error")
             }
         }
-    }
+    }*/
 
     fun updateTrackName(newName: String) {
         _trackName.value = newName
@@ -98,6 +118,58 @@ class TrackFormViewModel(
                 insertTrackUseCase.insertTrack(Track)
             } catch (e: Exception) {
                 _state.value = TrackState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun loadTrack(trackId: Long) {
+        viewModelScope.launch {
+            try {
+                val trackDeferred = async { getTrackByIdUseCase.getTrackById(trackId).firstOrNull() }
+                val countriesDeferred = async { getAllCountriesUseCase.getAllCountries().firstOrNull() }
+
+                val track = trackDeferred.await()
+                val countries = countriesDeferred.await()
+
+                if (track != null && countries != null) {
+                    _trackName.value = track.name
+                    _countryId.value = track.country.id
+                    _trackDistance.value = track.distance.toString()
+                    _trackImageUri.value = track.image
+
+                    _state.value = TrackState.TrackDetail(track, countries)
+                } else {
+                    _state.value = TrackState.Error("No se encontraron datos")
+                }
+
+            } catch (e: Exception) {
+                _state.value = TrackState.Error("Error al cargar los datos: ${e.message}")
+            }
+        }
+    }
+
+    fun loadCountries() {
+        viewModelScope.launch {
+            getAllCountriesUseCase.getAllCountries().collect {
+                _state.value = TrackState.Success(it)
+            }
+        }
+    }
+
+    fun updateTrack(trackId: Long) {
+        viewModelScope.launch {
+            _countryId.value?.let { countryId ->
+                getCountryByIdUseCase.getCountryById(countryId).collect { country ->
+                    val trackUpdated = Track(
+                        id = trackId,
+                        name = _trackName.value,
+                        country = country,
+                        distance = _trackDistance.value.toDouble(),
+                        image = _trackImageUri.value
+                    )
+
+                    updateTrackUseCase.updateTrack(trackUpdated)
+                }
             }
         }
     }

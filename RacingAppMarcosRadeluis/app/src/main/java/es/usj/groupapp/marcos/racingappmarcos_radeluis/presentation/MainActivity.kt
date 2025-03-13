@@ -1,7 +1,6 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -57,9 +56,10 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewm
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModelFactory
 
 class MainActivity() : ComponentActivity() {
+    val db = FirebaseFirestore.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       val db = FirebaseFirestore.getInstance()
+
         enableEdgeToEdge()
         setContent {
             val database = RacingAppDatabase.provideDatabase(applicationContext)
@@ -182,8 +182,23 @@ class MainActivity() : ComponentActivity() {
 
                                 TrackFormScreen(
                                     viewModel = trackViewModel,
-                                    navController = navController
+                                    navController = navController,
+                                    trackId = null
                                 )
+                            }
+
+                            composable("track_form/{trackId}") { backStackEntry ->
+                                val trackId = backStackEntry.arguments?.getString("trackId")?.toLongOrNull()
+                                backStackEntry.savedStateHandle["trackId"] = trackId
+
+                                val trackFactory = TrackFormViewModelFactory(
+                                    context = this@MainActivity,
+                                    database = database,
+                                    savedStateHandle = backStackEntry.savedStateHandle
+                                )
+                                val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
+
+                                TrackFormScreen(viewModel = trackViewModel, navController = navController, trackId = trackId!!)
                             }
                         }
                     }
