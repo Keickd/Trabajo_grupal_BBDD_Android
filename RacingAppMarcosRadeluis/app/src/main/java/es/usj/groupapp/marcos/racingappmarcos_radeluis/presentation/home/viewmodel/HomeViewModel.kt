@@ -2,17 +2,14 @@ package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.InsertAndLoadCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetAllTeamsUsecase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetAllTracksUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeState
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 open class HomeViewModel(
@@ -25,14 +22,9 @@ open class HomeViewModel(
     private val homeDataMutableStateFlow = MutableStateFlow<HomeState>(HomeState.Loading)
     open val homeDataStateFlow: StateFlow<HomeState> = homeDataMutableStateFlow
 
-    private var racersList: List<Racer>? = null
-    private var teamsList: List<Team>? = null
-    private var tracksList: List<Track>? = null
-    private var dataLoadedCounter = 0
-
     init {
         insertAndGetCountries()
-        getData()
+        collectData()
     }
 
     private fun insertAndGetCountries() {
@@ -45,56 +37,21 @@ open class HomeViewModel(
         }
     }
 
-    private fun getData() {
+    private fun collectData() {
         viewModelScope.launch {
-            val racersJob = async { loadRacers() }
-            val teamsJob = async { loadTeams() }
-            val tracksJob = async { loadTracks() }
-
-            racersJob.await()
-            teamsJob.await()
-            tracksJob.await()
-
-            checkAllDataLoaded()
-        }
-    }
-
-    private suspend fun loadRacers() {
-        getAllRacersUseCase.getAllRacers().collect { racers ->
-            racersList = racers
-            onDataLoaded()
-        }
-    }
-
-    private suspend fun loadTeams() {
-        getAllTeamsUseCase.getAllTeams().collect { teams ->
-            teamsList = teams
-            onDataLoaded()
-        }
-    }
-
-    private suspend fun loadTracks() {
-        getAllTracksUseCase.getAllTracks().collect { tracks ->
-            tracksList = tracks
-            onDataLoaded()
-        }
-    }
-
-    private fun onDataLoaded() {
-        dataLoadedCounter++
-
-        if (dataLoadedCounter == 3) {
-            checkAllDataLoaded()
-        }
-    }
-
-    private fun checkAllDataLoaded() {
-        if (racersList != null && teamsList != null && tracksList != null) {
-            homeDataMutableStateFlow.value = HomeState.Success(
-                racers = racersList!!,
-                tracks = tracksList!!,
-                teams = teamsList!!
-            )
+            combine(
+                getAllRacersUseCase.getAllRacers(),
+                getAllTeamsUseCase.getAllTeams(),
+                getAllTracksUseCase.getAllTracks()
+            ) { racers, teams, tracks ->
+                HomeState.Success(
+                    racers = racers,
+                    teams = teams,
+                    tracks = tracks
+                )
+            }.collect { homeState ->
+                homeDataMutableStateFlow.value = homeState
+            }
         }
     }
 }

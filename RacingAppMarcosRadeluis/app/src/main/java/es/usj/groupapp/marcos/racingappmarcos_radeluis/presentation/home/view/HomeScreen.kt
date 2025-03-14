@@ -25,9 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
@@ -36,17 +38,17 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.li
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.lists.TeamsList
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.lists.TracksList
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, navController: NavHostController) {
-    // Recogemos el estado desde el ViewModel
+fun HomeScreen(viewModel: HomeViewModel = viewModel(factory = DependencyProvider.homeViewModelFactory), navController: NavHostController) {
     val state by viewModel.homeDataStateFlow.collectAsStateWithLifecycle()
 
     when (val stateValue = state) {
-        is HomeState.Loading -> LoadingComposable() // Pantalla de carga
-        is HomeState.Failure -> FailureComposable() // Pantalla de error
+        is HomeState.Loading -> LoadingComposable()
+        is HomeState.Failure -> FailureComposable()
         is HomeState.Success -> {
-            val data = stateValue // Accedemos a los datos de los racers, tracks y teams
+            val data = stateValue
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
