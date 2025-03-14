@@ -350,7 +350,6 @@ fun TeamFormScreen(viewModel: TeamFormViewModel = viewModel(factory = Dependency
             is TeamState.Deleted ->{
                 navController.popBackStack()
             }
-
         }
     }
 }

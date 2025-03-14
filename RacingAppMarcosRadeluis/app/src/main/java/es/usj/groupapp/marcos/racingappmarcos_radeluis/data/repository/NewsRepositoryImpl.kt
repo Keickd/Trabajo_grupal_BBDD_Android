@@ -11,7 +11,19 @@ class NewsRepositoryImpl(private val newsDataSource: NewsDataSource) : NewsRepos
         return newsDataSource.getNews()
     }
 
+    override suspend fun getNewsById(newsId: String): Result<News> {
+        return newsDataSource.getNewsById(newsId)
+    }
+
     override suspend fun addNews(news: News): Result<String> {
         return newsDataSource.addNews(news)
+    }
+
+    override suspend fun updateNews(news: News): Result<String> {
+        return newsDataSource.updateNews(news)
+    }
+
+    override suspend fun deleteNews(newsId: String): Result<String> {
+        return newsDataSource.deleteNews(newsId)
     }
 }

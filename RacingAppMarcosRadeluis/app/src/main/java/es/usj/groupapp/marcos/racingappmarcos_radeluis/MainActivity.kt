@@ -39,10 +39,8 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
@@ -53,7 +51,6 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
 class MainActivity() : ComponentActivity() {
-    val db = FirebaseFirestore.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -84,19 +81,21 @@ class MainActivity() : ComponentActivity() {
                             }
 
                             composable("news") {
-                                val newsFactory = NewsViewModelFactory(db)
-                                val newsViewModel = newsFactory.create(NewsViewModel::class.java)
-
-                                NewsScreen(newsViewModel,{
+                                NewsScreen(onAddNewsClick = {
                                     navController.navigate("news_form")
-                                }, navController)
+                                }, navController = navController)
                             }
 
                             composable("news_form") { backStackEntry ->
-                                val newsFormFactory = NewsFormViewModelFactory(db, savedStateHandle = backStackEntry.savedStateHandle)
-                                val newsFormViewModel = newsFormFactory.create(NewsFormViewModel::class.java)
+                                NewsFormScreen(navController = navController, newsId = null)
+                            }
 
-                                NewsFormScreen(newsFormViewModel, navController)
+                             composable(
+                                route = "news_form/{newsId}",
+                                arguments = listOf(navArgument("newsId") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val newsId = backStackEntry.arguments?.getString("newsId") ?: ""
+                                NewsFormScreen(navController = navController, newsId = newsId)
                             }
 
                             composable("races") {
