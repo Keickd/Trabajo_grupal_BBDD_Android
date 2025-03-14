@@ -27,15 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, teamId: Long?) {
+fun TeamFormScreen(viewModel: TeamFormViewModel = viewModel(factory = DependencyProvider.teamViewModelFactory), navController: NavController, teamId: Long?) {
     val teamsState by viewModel.state.collectAsState()
     val teamName by viewModel.teamName.collectAsState()
     val countryId by viewModel.countryId.collectAsState()
@@ -65,7 +67,6 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
     }
 
     val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
-
 
     val isButtonEnabled by remember(teamName, countryId, imageUri) {
         derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
