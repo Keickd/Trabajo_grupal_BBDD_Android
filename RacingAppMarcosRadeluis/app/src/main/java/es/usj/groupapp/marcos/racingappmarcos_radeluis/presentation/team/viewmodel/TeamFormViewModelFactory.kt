@@ -13,6 +13,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRe
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.DeleteTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
@@ -43,6 +44,7 @@ class TeamFormViewModelFactory(
                 getTeamByIdUseCase = GetTeamByIdUseCase(teamRepositoryImpl),
                 updateTeamUseCase = UpdateTeamUseCase(teamRepositoryImpl),
                 insertTeamUseCase = InsertTeamUseCase(teamRepositoryImpl),
+                deleteTeamUseCase = DeleteTeamUseCase(teamRepositoryImpl),
                 savedStateHandle = savedStateHandle
             ) as T
         }

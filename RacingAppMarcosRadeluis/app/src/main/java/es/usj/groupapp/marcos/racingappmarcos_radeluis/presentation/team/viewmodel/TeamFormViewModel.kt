@@ -7,6 +7,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.DeleteTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
@@ -27,6 +28,7 @@ class TeamFormViewModel(
     private val insertTeamUseCase: InsertTeamUseCase,
     private val getTeamByIdUseCase: GetTeamByIdUseCase,
     private val updateTeamUseCase: UpdateTeamUseCase,
+    private val deleteTeamUseCase: DeleteTeamUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -48,7 +50,9 @@ class TeamFormViewModel(
 
     init {
         if (teamId != null) {
-            loadTeam(teamId)
+            if (_state.value != TeamState.Deleted) {
+                loadTeam(teamId)
+            }
         } else {
             loadCountries()
         }
@@ -147,6 +151,13 @@ class TeamFormViewModel(
                     updateTeamUseCase.updateTeam(teamUpdated)
                 }
             }
+        }
+    }
+
+    fun deleteTeam(teamId: Long){
+        viewModelScope.launch {
+            deleteTeamUseCase.deleteTeam(teamId)
+            _state.value = TeamState.Deleted
         }
     }
 }

@@ -29,7 +29,6 @@ class TeamLocalDatasource(
         }
     }
 
-
     suspend fun insertTeam(team: Team) {
         teamDao.insertTeam(teamMapper.mapToEntity(team))
     }
@@ -45,5 +44,10 @@ class TeamLocalDatasource(
 
     suspend fun updateTeam(team: Team){
         teamDao.updateTeam(teamMapper.mapToEntity(team))
+    }
+
+    suspend fun deleteTeam(id: Long) {
+        teamDao.deleteRacersByTeamId(id)
+        teamDao.deleteTeam(id);
     }
 }

@@ -21,4 +21,8 @@ class RacerRepositoryImpl(private val racerLocalDatasource: RacerLocalDatasource
     override suspend fun updateRacer(racer: Racer) {
         racerLocalDatasource.updateRacer(racer)
     }
+
+    override suspend fun deleteRacer(id: Long) {
+        racerLocalDatasource.deleteRacer(id)
+    }
 }

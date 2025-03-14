@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -70,6 +71,8 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
         derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,8 +80,6 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
             .verticalScroll(rememberScrollState())
             .systemBarsPadding(),
     ) {
-        val coroutineScope = rememberCoroutineScope()
-
         when (teamsState) {
             is TeamState.Error -> FailureComposable()
             is TeamState.Loading -> LoadingComposable()
@@ -221,14 +222,31 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
             }
             is TeamState.TeamDetail -> {
                 val imageFromTeam = (teamsState as TeamState.TeamDetail).team.image
-                Text(
-                    text = "Edit team",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
+
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 25.dp)
-                )
+                        .padding(bottom = 25.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Edit team",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(onClick = {
+                        viewModel.deleteTeam(teamId!!)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar equipo",
+                            tint = Color.Black,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = teamName,
@@ -328,9 +346,13 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
                     Text("Update Team", style = MaterialTheme.typography.headlineMedium)
                 }
             }
+            is TeamState.Deleted ->{
+                navController.popBackStack()
             }
+
         }
     }
+}
 
 
 

@@ -9,5 +9,5 @@ interface TrackRepository {
     suspend fun insertTrack(track: Track)
     suspend fun updateTrack(track: Track)
     suspend fun getTrackById(id: Long): Flow<Track>
-
+    suspend fun deleteTrack(id: Long)
 }

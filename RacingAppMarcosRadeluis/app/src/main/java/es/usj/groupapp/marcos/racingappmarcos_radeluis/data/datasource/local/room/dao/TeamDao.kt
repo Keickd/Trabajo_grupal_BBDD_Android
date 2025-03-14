@@ -21,4 +21,10 @@ interface TeamDao {
 
     @Update(onConflict = IGNORE)
     suspend fun updateTeam(teamEntity: TeamEntity)
+
+    @Query("DELETE FROM teams WHERE id = :id")
+    suspend fun deleteTeam(id: Long)
+
+    @Query("DELETE FROM racers WHERE team_id = :teamId")
+    suspend fun deleteRacersByTeamId(teamId: Long)
 }

@@ -21,4 +21,7 @@ interface TrackDao {
 
     @Update(onConflict = IGNORE)
     suspend fun updateTrack(trackEntity: TrackEntity)
+
+    @Query("DELETE FROM tracks WHERE id = :id")
+    suspend fun deleteTrack(id: Long)
 }
