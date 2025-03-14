@@ -35,7 +35,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
@@ -60,8 +59,6 @@ class MainActivity() : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val database = RacingAppDatabase.provideDatabase(applicationContext)
-            val homeFactory = HomeViewModelFactory(this, database)
             val navController = rememberNavController()
 
             val settingFactory = SettingViewModelFactory(this)
@@ -83,8 +80,7 @@ class MainActivity() : ComponentActivity() {
                     ) {
                         NavHost(navController = navController, startDestination = "home") {
                             composable("home") {
-                                val homeViewModel = homeFactory.create(HomeViewModel::class.java)
-                                HomeScreen(viewModel = homeViewModel, navController = navController)
+                                HomeScreen(navController = navController)
                             }
 
                             composable("news") {

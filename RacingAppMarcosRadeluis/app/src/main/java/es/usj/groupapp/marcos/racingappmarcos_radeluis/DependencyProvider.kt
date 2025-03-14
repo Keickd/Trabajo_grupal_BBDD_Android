@@ -20,7 +20,9 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepos
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TrackRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.InsertAndLoadCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.InsertRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.UpdateRacerUseCase
@@ -30,14 +32,58 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetT
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.DeleteTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetAllTracksUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetTrackByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.InsertTrackUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.UpdateTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
 object DependencyProvider {
+
+    //ViewModel Factory HOME
+    val homeViewModelFactory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+
+            val context = extras[APPLICATION_KEY]?.applicationContext!!
+
+            val database = RacingAppDatabase.provideDatabase(context)
+
+            val countryMapper = CountryMapper()
+            val teamMapper = TeamMapper(countryMapper)
+            val racerMapper = RacerMapper(countryMapper, teamMapper)
+            val trackMapper = TrackMapper(countryMapper)
+
+            val countryDao = database.countryDao()
+            val teamDao = database.teamDao()
+            val racerDao = database.racerDao()
+            val trackDao = database.trackDao()
+
+            val countryLocalDataSource = CountryLocalDataSource(context, countryDao, countryMapper)
+            val teamLocalDataSource = TeamLocalDatasource(teamDao, countryDao, teamMapper)
+            val racerLocalDatasource = RacerLocalDatasource(racerDao, teamDao, countryDao, racerMapper)
+            val trackLocalDatasource = TrackLocalDatasource(countryDao, trackDao, trackMapper)
+
+            val countryRepositoryImpl = CountryRepositoryImpl(countryLocalDataSource)
+            val teamRepositoryImpl = TeamRepositoryImpl(teamLocalDataSource)
+            val racerRepositoryImpl = RacerRepositoryImpl(racerLocalDatasource)
+            val trackRepositoryImpl = TrackRepositoryImpl(trackLocalDatasource)
+
+            val insertAndLoadCountriesUseCase = InsertAndLoadCountriesUseCase(countryRepositoryImpl)
+            val getAllTeamsUseCase = GetAllTeamsUsecase(teamRepositoryImpl)
+            val getAllRacersUseCase = GetAllRacersUseCase(racerRepositoryImpl)
+            val getAllTracksUseCase = GetAllTracksUseCase(trackRepositoryImpl)
+
+            return HomeViewModel(
+                insertAndLoadCountriesUseCase = insertAndLoadCountriesUseCase,
+                getAllTeamsUseCase = getAllTeamsUseCase,
+                getAllRacersUseCase = getAllRacersUseCase,
+                getAllTracksUseCase = getAllTracksUseCase,
+                ) as T
+        }
+    }
 
     //ViewModel Factory TEAMS
     val teamViewModelFactory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -166,6 +212,4 @@ object DependencyProvider {
                 savedStateHandle = savedStateHandle) as T
         }
     }
-
-
 }
