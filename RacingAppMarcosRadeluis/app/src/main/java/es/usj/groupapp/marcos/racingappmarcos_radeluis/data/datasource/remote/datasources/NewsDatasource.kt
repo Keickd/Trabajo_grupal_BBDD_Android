@@ -18,7 +18,7 @@ class NewsDataSource(private val db: FirebaseFirestore) {
                 }
                 if (snapshot != null) {
                     val newsList = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(News::class.java)
+                        doc.toObject(News::class.java)?.copy(id = doc.id)
                     }
                     trySend(newsList)
                 }
@@ -26,11 +26,57 @@ class NewsDataSource(private val db: FirebaseFirestore) {
         awaitClose { listener.remove() }
     }
 
+    suspend fun getNewsById(newsId: String): Result<News> {
+        return try {
+            val documentSnapshot = db.collection("news").document(newsId).get().await()
+
+            if (documentSnapshot.exists()) {
+                val news = documentSnapshot.toObject(News::class.java)?.copy(id = documentSnapshot.id)
+                Result.success(news ?: throw Exception("Noticia no encontrada"))
+            } else {
+                Result.failure(Exception("Noticia no encontrada"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun addNews(news: News): Result<String> {
         return try {
-            val documentReference = db.collection("news").add(news).await()
+            val documentReference = db.collection("news").add(
+                mapOf(
+                    "title" to news.title,
+                    "description" to news.description
+                )
+            ).await()
+            Result.success(documentReference.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
-            Result.success("Noticia añadida con éxito: ${documentReference.id}")
+    suspend fun updateNews(news: News): Result<String> {
+        return try {
+            if (news.id.isNullOrEmpty()) {
+                return Result.failure(Exception("ID de la noticia no puede estar vacío"))
+            }
+
+            db.collection("news").document(news.id!!).update(
+                mapOf(
+                    "title" to news.title,
+                    "description" to news.description
+                )
+            ).await()
+            Result.success("Noticia actualizada con éxito")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteNews(newsId: String): Result<String> {
+        return try {
+            db.collection("news").document(newsId).delete().await()
+            Result.success("Noticia eliminada con éxito")
         } catch (e: Exception) {
             Result.failure(e)
         }

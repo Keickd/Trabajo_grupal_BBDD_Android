@@ -1,5 +1,6 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -11,17 +12,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.News
 
 @Composable
-fun NewsCard(title: String, description: String, modifier: Modifier) {
+fun NewsCard(
+    news: News,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable {
+            navController.navigate("news_form/${news.id}")
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = title, style = MaterialTheme.typography.headlineLarge)
+            Text(text = news.title, style = MaterialTheme.typography.headlineLarge)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = description, style = MaterialTheme.typography.titleLarge)
+            Text(text = news.description, style = MaterialTheme.typography.titleLarge)
         }
     }
 }
