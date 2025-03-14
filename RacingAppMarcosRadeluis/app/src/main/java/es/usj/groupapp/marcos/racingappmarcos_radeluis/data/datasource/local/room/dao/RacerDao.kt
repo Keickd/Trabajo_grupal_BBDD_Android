@@ -23,4 +23,6 @@ interface RacerDao {
     @Update(onConflict = IGNORE)
     suspend fun updateRacer(racerEntity: RacerEntity)
 
+    @Query("DELETE FROM racers WHERE id = :id")
+    suspend fun deleteRacer(id: Long)
 }
