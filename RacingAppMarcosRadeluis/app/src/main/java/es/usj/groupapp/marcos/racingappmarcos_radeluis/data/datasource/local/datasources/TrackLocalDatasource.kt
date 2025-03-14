@@ -47,4 +47,8 @@ class TrackLocalDatasource(
     suspend fun updateTrack(track: Track){
         trackDao.updateTrack(trackMapper.mapToEntity(track))
     }
+
+    suspend fun deleteTrack(id: Long) {
+        trackDao.deleteTrack(id);
+    }
 }

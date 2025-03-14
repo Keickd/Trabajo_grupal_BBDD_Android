@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,15 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, teamId: Long?) {
+fun TeamFormScreen(viewModel: TeamFormViewModel = viewModel(factory = DependencyProvider.teamViewModelFactory), navController: NavController, teamId: Long?) {
     val teamsState by viewModel.state.collectAsState()
     val teamName by viewModel.teamName.collectAsState()
     val countryId by viewModel.countryId.collectAsState()
@@ -65,10 +68,11 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
 
     val selectedOption = countries.find { it.id == countryId } ?: Country(0, "Select a country", "")
 
-
     val isButtonEnabled by remember(teamName, countryId, imageUri) {
         derivedStateOf { teamName.isNotBlank() && selectedOption.id.toInt() != 0 }
     }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -77,8 +81,6 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
             .verticalScroll(rememberScrollState())
             .systemBarsPadding(),
     ) {
-        val coroutineScope = rememberCoroutineScope()
-
         when (teamsState) {
             is TeamState.Error -> FailureComposable()
             is TeamState.Loading -> LoadingComposable()
@@ -221,14 +223,31 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
             }
             is TeamState.TeamDetail -> {
                 val imageFromTeam = (teamsState as TeamState.TeamDetail).team.image
-                Text(
-                    text = "Edit team",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
+
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 25.dp)
-                )
+                        .padding(bottom = 25.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Edit team",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(onClick = {
+                        viewModel.deleteTeam(teamId!!)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar equipo",
+                            tint = Color.Black,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = teamName,
@@ -328,9 +347,13 @@ fun TeamFormScreen(viewModel: TeamFormViewModel, navController: NavController, t
                     Text("Update Team", style = MaterialTheme.typography.headlineMedium)
                 }
             }
+            is TeamState.Deleted ->{
+                navController.popBackStack()
             }
+
         }
     }
+}
 
 
 

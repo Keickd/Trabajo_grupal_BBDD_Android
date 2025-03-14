@@ -21,4 +21,8 @@ class TeamRepositoryImpl(private val teamLocalDatasource: TeamLocalDatasource): 
     override suspend fun updateTeam(team: Team) {
         teamLocalDatasource.updateTeam(team)
     }
+
+    override suspend fun deleteTeam(id: Long) {
+       teamLocalDatasource.deleteTeam(id)
+    }
 }

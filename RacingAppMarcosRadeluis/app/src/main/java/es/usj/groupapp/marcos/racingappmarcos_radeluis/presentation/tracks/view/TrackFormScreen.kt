@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,17 +53,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun TrackFormScreen(viewModel: TrackFormViewModel, navController: NavController, trackId: Long?) {
+fun TrackFormScreen(viewModel: TrackFormViewModel = viewModel(factory = DependencyProvider.trackViewModelFactory), navController: NavController, trackId: Long?) {
     val tracksState by viewModel.state.collectAsState()
     val trackName by viewModel.trackName.collectAsState()
     val trackDistance by viewModel.trackDistance.collectAsState()
@@ -256,14 +261,30 @@ fun TrackFormScreen(viewModel: TrackFormViewModel, navController: NavController,
             is TrackState.TrackDetail -> {
                 val imageFromTrack = (tracksState as TrackState.TrackDetail).track.image
 
-                Text(
-                    text = "Create a new track",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 25.dp)
-                )
+                        .padding(bottom = 25.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Edit track",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(onClick = {
+                        viewModel.deleteTrack(trackId!!)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar pista",
+                            tint = Color.Black,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = trackName,
@@ -372,6 +393,9 @@ fun TrackFormScreen(viewModel: TrackFormViewModel, navController: NavController,
                 ) {
                     Text("Update track", style = MaterialTheme.typography.headlineMedium)
                 }
+            }
+            is TrackState.Deleted ->{
+                navController.popBackStack()
             }
         }
     }

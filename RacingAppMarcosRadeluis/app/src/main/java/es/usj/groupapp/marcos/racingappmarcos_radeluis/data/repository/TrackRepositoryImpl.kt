@@ -22,5 +22,9 @@ class TrackRepositoryImpl(private val trackLocalDatasource: TrackLocalDatasource
     override suspend fun getTrackById(id: Long): Flow<Track> {
         return trackLocalDatasource.getTrackById(id)
     }
+
+    override suspend fun deleteTrack(id: Long) {
+        trackLocalDatasource.deleteTrack(id)
+    }
 }
 

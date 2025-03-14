@@ -8,6 +8,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Track
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.DeleteTrackUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetTrackByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.InsertTrackUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.UpdateTrackUseCase
@@ -29,6 +30,7 @@ class TrackFormViewModel(
     private val getTrackByIdUseCase: GetTrackByIdUseCase,
     private val insertTrackUseCase: InsertTrackUseCase,
     private val updateTrackUseCase: UpdateTrackUseCase,
+    private val deleteTrackUseCase: DeleteTrackUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -171,6 +173,13 @@ class TrackFormViewModel(
                     updateTrackUseCase.updateTrack(trackUpdated)
                 }
             }
+        }
+    }
+
+    fun deleteTrack(trackId: Long){
+        viewModelScope.launch {
+            deleteTrackUseCase.deleteTrack(trackId)
+            _state.value = TrackState.Deleted
         }
     }
 }

@@ -7,4 +7,5 @@ interface RacerRepository {
     suspend fun insertRacer(racer: Racer)
     suspend fun getRacerById(id: Long): Flow<Racer>
     suspend fun updateRacer(racer: Racer)
+    suspend fun deleteRacer(id: Long)
 }

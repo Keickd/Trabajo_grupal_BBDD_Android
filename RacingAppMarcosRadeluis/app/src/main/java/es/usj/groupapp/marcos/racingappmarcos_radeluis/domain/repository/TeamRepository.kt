@@ -8,4 +8,5 @@ interface TeamRepository {
     suspend fun insertTeam(team: Team)
     suspend fun getTeamById(id: Long): Flow<Team>
     suspend fun updateTeam(team: Team)
+    suspend fun deleteTeam(id: Long)
 }

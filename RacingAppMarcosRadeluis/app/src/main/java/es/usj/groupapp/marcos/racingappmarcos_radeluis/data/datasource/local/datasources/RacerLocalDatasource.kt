@@ -54,4 +54,8 @@ class RacerLocalDatasource(
     suspend fun updateRacer(racer: Racer){
         racerDao.updateRacer(racerMapper.mapToEntity(racer))
     }
+
+    suspend fun deleteRacer(id: Long) {
+        racerDao.deleteRacer(id);
+    }
 }

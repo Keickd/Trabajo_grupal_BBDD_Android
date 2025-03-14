@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation
+package es.usj.groupapp.marcos.racingappmarcos_radeluis
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,11 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.firestore.FirebaseFirestore
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.R
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
@@ -50,10 +51,8 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.vie
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.TrackFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModelFactory
 
 class MainActivity() : ComponentActivity() {
     val db = FirebaseFirestore.getInstance()
@@ -114,29 +113,16 @@ class MainActivity() : ComponentActivity() {
                                 SettingScreen(settingViewModel)
                             }
 
-                            composable("team_form") { backStackEntry ->
-                                val teamFactory = TeamFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
-
-                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = null)
+                            composable("team_form") {
+                                TeamFormScreen(navController = navController, teamId = null)
                             }
 
-                            composable("team_form/{teamId}") { backStackEntry ->
-                                val teamId = backStackEntry.arguments?.getString("teamId")?.toLongOrNull()
-                                backStackEntry.savedStateHandle["teamId"] = teamId
-
-                                val teamFactory = TeamFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val teamViewModel = teamFactory.create(TeamFormViewModel::class.java)
-
-                                TeamFormScreen(viewModel = teamViewModel, navController = navController, teamId = teamId)
+                            composable(
+                                route = "team_form/{teamId}",
+                                arguments = listOf(navArgument("teamId") { type = NavType.LongType })
+                            ) { backStackEntry ->
+                                val teamId = backStackEntry.arguments?.getLong("teamId") ?: 0L
+                                TeamFormScreen(navController = navController, teamId = teamId)
                             }
 
                             composable("racer_form") { backStackEntry ->
@@ -172,33 +158,16 @@ class MainActivity() : ComponentActivity() {
                                 )
                             }
 
-                            composable("track_form") { backStackEntry ->
-                                val trackFactory = TrackFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
-
-                                TrackFormScreen(
-                                    viewModel = trackViewModel,
-                                    navController = navController,
-                                    trackId = null
-                                )
+                            composable("track_form") {
+                                TrackFormScreen(navController = navController, trackId = null)
                             }
 
-                            composable("track_form/{trackId}") { backStackEntry ->
-                                val trackId = backStackEntry.arguments?.getString("trackId")?.toLongOrNull()
-                                backStackEntry.savedStateHandle["trackId"] = trackId
-
-                                val trackFactory = TrackFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val trackViewModel = trackFactory.create(TrackFormViewModel::class.java)
-
-                                TrackFormScreen(viewModel = trackViewModel, navController = navController, trackId = trackId!!)
+                            composable(
+                                route = "track_form/{trackId}",
+                                arguments = listOf(navArgument("trackId") { type = NavType.LongType })
+                            ) { backStackEntry ->
+                                val trackId = backStackEntry.arguments?.getLong("trackId") ?: 0L
+                                TrackFormScreen(navController = navController, trackId = trackId)
                             }
                         }
                     }
