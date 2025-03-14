@@ -6,18 +6,26 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.CountryLocalDataSource
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.RacerLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TeamLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TrackLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.CountryMapper
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.RacerMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TeamMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TrackMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RacerRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TrackRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.InsertRacerUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.UpdateRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.DeleteTeamUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetAllTeamsUsecase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.InsertTeamUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.UpdateTeamUseCase
@@ -25,6 +33,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.Del
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.GetTrackByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.InsertTrackUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.track.UpdateTrackUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
@@ -66,6 +75,54 @@ object DependencyProvider {
                 updateTeamUseCase =  updateTeamUseCase,
                 insertTeamUseCase = insertTeamUseCase,
                 deleteTeamUseCase = deleteTeamUseCase,
+                savedStateHandle = savedStateHandle) as T
+        }
+    }
+
+    //ViewModel Factory RACERS
+    val racersViewModelFactory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+
+            val context = extras[APPLICATION_KEY]?.applicationContext!!
+
+            val database = RacingAppDatabase.provideDatabase(context)
+
+            val countryMapper = CountryMapper()
+            val teamMapper = TeamMapper(countryMapper)
+            val racerMapper = RacerMapper(countryMapper, teamMapper)
+
+            val countryDao = database.countryDao()
+            val teamDao = database.teamDao()
+            val racerDao = database.racerDao()
+
+            val countryLocalDataSource = CountryLocalDataSource(context, countryDao, countryMapper)
+            val teamLocalDataSource = TeamLocalDatasource(teamDao, countryDao, teamMapper)
+            val racerLocalDatasource = RacerLocalDatasource(racerDao, teamDao, countryDao, racerMapper)
+
+            val countryRepositoryImpl = CountryRepositoryImpl(countryLocalDataSource)
+            val teamRepositoryImpl = TeamRepositoryImpl(teamLocalDataSource)
+            val racerRepositoryImpl = RacerRepositoryImpl(racerLocalDatasource)
+
+            val getAllCountriesUseCase = GetAllCountriesUseCase(countryRepositoryImpl)
+            val getCountryByIdUseCase = GetCountryByIdUseCase(countryRepositoryImpl)
+            val getAllTeamsUseCase = GetAllTeamsUsecase(teamRepositoryImpl)
+            val getTeamByIdUseCase = GetTeamByIdUseCase(teamRepositoryImpl)
+            val getRacerByIdUseCase = GetRacerByIdUseCase(racerRepositoryImpl)
+            val updateRacerByIdUseCase = UpdateRacerUseCase(racerRepositoryImpl)
+            val insertRacerUseCase = InsertRacerUseCase(racerRepositoryImpl)
+            val deleteRacerUseCase = DeleteRacerUseCase(racerRepositoryImpl)
+
+            val savedStateHandle = extras.createSavedStateHandle()
+
+            return RacerFormViewModel(
+                getAllCountriesUseCase = getAllCountriesUseCase,
+                getCountryByIdUseCase =  getCountryByIdUseCase,
+                getAllTeamsUsecase = getAllTeamsUseCase,
+                getTeamByIdUseCase = getTeamByIdUseCase,
+                getRacerByIdUseCase = getRacerByIdUseCase,
+                insertRacerUseCase = insertRacerUseCase,
+                updateRacerUseCase = updateRacerByIdUseCase,
+                deleteRacerUseCase = deleteRacerUseCase,
                 savedStateHandle = savedStateHandle) as T
         }
     }

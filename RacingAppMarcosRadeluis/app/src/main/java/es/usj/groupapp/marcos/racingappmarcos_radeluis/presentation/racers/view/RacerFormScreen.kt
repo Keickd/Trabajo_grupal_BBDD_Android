@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,17 +27,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Country
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.utils.FlagImage
 import kotlinx.coroutines.launch
 
 @Composable
-fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController, racerId: Long?) {
+fun RacerFormScreen(viewModel: RacerFormViewModel = viewModel(factory = DependencyProvider.racersViewModelFactory), navController: NavController, racerId: Long?) {
     val racersState by viewModel.state.collectAsState()
     val racerName by viewModel.racerName.collectAsState()
     val racerAge by viewModel.racerAge.collectAsState()
@@ -295,14 +299,30 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController,
             is RacerState.RacerDetail -> {
                 val imageFromRacer = (racersState as RacerState.RacerDetail).racer.image
 
-                Text(
-                    text = "Edit racer",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 25.dp)
-                )
+                        .padding(bottom = 25.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Edit racer",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    IconButton(onClick = {
+                        viewModel.deleteRacer(racerId!!)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Borrar piloto",
+                            tint = Color.Black,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = racerName,
@@ -468,6 +488,9 @@ fun RacerFormScreen(viewModel: RacerFormViewModel, navController: NavController,
                 ) {
                     Text("Update Racer", style = MaterialTheme.typography.headlineMedium)
                 }
+            }
+            is RacerState.Deleted ->{
+                navController.popBackStack()
             }
         }
     }
