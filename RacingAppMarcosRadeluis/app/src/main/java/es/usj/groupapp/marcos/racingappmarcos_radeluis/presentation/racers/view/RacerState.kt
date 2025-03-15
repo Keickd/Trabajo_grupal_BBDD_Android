@@ -9,4 +9,5 @@ sealed class RacerState {
     data class Success(val countries: List<Country>, val teams: List<Team>) : RacerState()
     data class Error(val message: String) : RacerState()
     data class RacerDetail(val racer: Racer, val countries: List<Country>, val teams: List<Team>) : RacerState()
+    data object Deleted: RacerState()
 }

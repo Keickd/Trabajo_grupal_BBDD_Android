@@ -8,12 +8,14 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Racer
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Team
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetAllCountriesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.country.GetCountryByIdUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.InsertRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.UpdateRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetAllTeamsUsecase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.team.GetTeamByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerState
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +35,7 @@ class RacerFormViewModel(
     private val insertRacerUseCase: InsertRacerUseCase,
     private val getRacerByIdUseCase: GetRacerByIdUseCase,
     private val updateRacerUseCase: UpdateRacerUseCase,
+    private val deleteRacerUseCase: DeleteRacerUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -219,4 +222,10 @@ class RacerFormViewModel(
         }
     }
 
+    fun deleteRacer(racerId: Long){
+        viewModelScope.launch {
+            deleteRacerUseCase.deleteRacer(racerId)
+            _state.value = RacerState.Deleted
+        }
+    }
 }

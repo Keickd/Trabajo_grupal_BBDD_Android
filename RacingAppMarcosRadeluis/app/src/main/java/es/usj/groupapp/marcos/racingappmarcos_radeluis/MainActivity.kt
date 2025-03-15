@@ -35,16 +35,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
@@ -55,14 +51,11 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
 class MainActivity() : ComponentActivity() {
-    val db = FirebaseFirestore.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         setContent {
-            val database = RacingAppDatabase.provideDatabase(applicationContext)
-            val homeFactory = HomeViewModelFactory(this, database)
             val navController = rememberNavController()
 
             val settingFactory = SettingViewModelFactory(this)
@@ -84,24 +77,25 @@ class MainActivity() : ComponentActivity() {
                     ) {
                         NavHost(navController = navController, startDestination = "home") {
                             composable("home") {
-                                val homeViewModel = homeFactory.create(HomeViewModel::class.java)
-                                HomeScreen(viewModel = homeViewModel, navController = navController)
+                                HomeScreen(navController = navController)
                             }
 
                             composable("news") {
-                                val newsFactory = NewsViewModelFactory(db)
-                                val newsViewModel = newsFactory.create(NewsViewModel::class.java)
-
-                                NewsScreen(newsViewModel,{
+                                NewsScreen(onAddNewsClick = {
                                     navController.navigate("news_form")
-                                }, navController)
+                                }, navController = navController)
                             }
 
                             composable("news_form") { backStackEntry ->
-                                val newsFormFactory = NewsFormViewModelFactory(db, savedStateHandle = backStackEntry.savedStateHandle)
-                                val newsFormViewModel = newsFormFactory.create(NewsFormViewModel::class.java)
+                                NewsFormScreen(navController = navController, newsId = null)
+                            }
 
-                                NewsFormScreen(newsFormViewModel, navController)
+                             composable(
+                                route = "news_form/{newsId}",
+                                arguments = listOf(navArgument("newsId") { type = NavType.StringType })
+                            ) { backStackEntry ->
+                                val newsId = backStackEntry.arguments?.getString("newsId") ?: ""
+                                NewsFormScreen(navController = navController, newsId = newsId)
                             }
 
                             composable("races") {
@@ -126,36 +120,15 @@ class MainActivity() : ComponentActivity() {
                             }
 
                             composable("racer_form") { backStackEntry ->
-                                val racerFactory = RacerFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
-
-                                RacerFormScreen(
-                                    viewModel = racerViewModel,
-                                    navController = navController,
-                                    racerId = null,
-                                )
+                                RacerFormScreen(navController = navController, racerId = null)
                             }
 
-                            composable("racer_form/{racerId}") { backStackEntry ->
-                                val racerId = backStackEntry.arguments?.getString("racerId")?.toLongOrNull()
-                                backStackEntry.savedStateHandle["racerId"] = racerId
-
-                                val racerFactory = RacerFormViewModelFactory(
-                                    context = this@MainActivity,
-                                    database = database,
-                                    savedStateHandle = backStackEntry.savedStateHandle
-                                )
-                                val racerViewModel = racerFactory.create(RacerFormViewModel::class.java)
-
-                                RacerFormScreen(
-                                    viewModel = racerViewModel,
-                                    navController = navController,
-                                    racerId = racerId,
-                                )
+                            composable(
+                                route = "racer_form/{racerId}",
+                                arguments = listOf(navArgument("racerId") { type = NavType.LongType })
+                            ) { backStackEntry ->
+                                val racerId = backStackEntry.arguments?.getLong("racerId") ?: 0L
+                                RacerFormScreen(navController = navController, racerId = racerId)
                             }
 
                             composable("track_form") {

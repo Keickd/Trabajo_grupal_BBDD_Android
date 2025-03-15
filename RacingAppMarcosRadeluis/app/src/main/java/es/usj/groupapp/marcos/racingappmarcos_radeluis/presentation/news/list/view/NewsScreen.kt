@@ -25,18 +25,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.DependencyProvider
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.FailureComposable
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeState
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.LoadingComposable
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 
 @Composable
 fun NewsScreen(
-    newsViewModel: NewsViewModel,  onAddNewsClick: () -> Unit, navController: NavController,
+    viewModel: NewsViewModel = viewModel(factory = DependencyProvider.newsViewModelFactory), onAddNewsClick: () -> Unit, navController: NavController,
 ) {
-    val newsState = newsViewModel.newsStateFlow.collectAsState()
+    val newsState = viewModel.newsStateFlow.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         Row(
@@ -67,8 +70,7 @@ fun NewsScreen(
             is NewsState.Success -> {
                 state.news.forEach { individualNews ->
                     NewsCard(
-                        title = individualNews.title,
-                        description = individualNews.description,
+                        news = individualNews, navController = navController,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 10.dp),
