@@ -14,6 +14,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RaceEntity
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TrackEntity
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TeamEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.RaceDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.RacerDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.TeamDao
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.dao.TrackDao
@@ -26,6 +27,8 @@ abstract class RacingAppDatabase : RoomDatabase() {
     abstract fun teamDao(): TeamDao
     abstract fun racerDao(): RacerDao
     abstract fun trackDao(): TrackDao
+    abstract fun raceDao(): RaceDao
+
 
     companion object {
         @Volatile

@@ -7,10 +7,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.CountryLocalDataSource
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.RaceLocalDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.RacerLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TeamLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TrackLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.CountryMapper
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.RaceMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.RacerMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TeamMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TrackMapper
@@ -18,6 +20,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.remote.datasources.NewsDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.NewsRepositoryImpl
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RaceRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RacerRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TrackRepositoryImpl
@@ -29,6 +32,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.Dele
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.UpdateNewsUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetAllRacesUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
@@ -48,6 +52,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmod
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.viewmodel.RacesViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
@@ -265,6 +270,25 @@ object DependencyProvider {
                 deleteNewsUseCase = deleteNewsUseCase,
                 savedStateHandle = savedStateHandle
                 ) as T
+        }
+    }
+
+    //Viewmodel factory Race List
+    val racesViewmodelFactory: ViewModelProvider.Factory = object : ViewModelProvider.Factory{
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            val context = extras[APPLICATION_KEY]?.applicationContext!!
+            val database = RacingAppDatabase.provideDatabase(context)
+            val raceDao = database.raceDao()
+            val countryDao = database.countryDao()
+            val countryMapper = CountryMapper()
+            val trackMapper = TrackMapper(countryMapper)
+            val raceMapper = RaceMapper(trackMapper, countryMapper)
+            val raceLocalDataSource = RaceLocalDataSource(raceDao, countryDao, raceMapper)
+            val raceRepositoryImpl = RaceRepositoryImpl(raceLocalDataSource)
+            val getAllRacesUseCase = GetAllRacesUseCase(raceRepositoryImpl)
+            val savedStateHandle = extras.createSavedStateHandle()
+
+            return RacesViewModel(getAllRacesUseCase, savedStateHandle) as T
         }
     }
 }

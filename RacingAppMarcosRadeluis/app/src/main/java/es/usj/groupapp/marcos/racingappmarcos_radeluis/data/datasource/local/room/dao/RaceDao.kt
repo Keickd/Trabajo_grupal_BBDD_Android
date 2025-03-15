@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RaceEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.relations.RaceWithTrack
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -21,4 +22,7 @@ interface RaceDao {
 
     @Update
     fun updateRace(raceEntity: RaceEntity)
+
+    @Query("Select * From races")
+    fun getRacesWithTrack() : Flow<List<RaceWithTrack>>
 }
