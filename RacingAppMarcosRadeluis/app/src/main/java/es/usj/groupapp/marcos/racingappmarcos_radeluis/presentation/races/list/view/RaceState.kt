@@ -1,4 +1,4 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.list.view
 
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Race
 

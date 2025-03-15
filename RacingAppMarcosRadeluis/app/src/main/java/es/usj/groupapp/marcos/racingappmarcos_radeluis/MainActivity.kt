@@ -35,7 +35,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.Ho
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.list.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModelFactory
