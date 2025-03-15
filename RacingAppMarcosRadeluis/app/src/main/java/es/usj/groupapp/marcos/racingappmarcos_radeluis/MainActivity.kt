@@ -35,6 +35,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.Ho
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.form.view.RaceFormScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.list.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
@@ -92,6 +93,10 @@ class MainActivity() : ComponentActivity() {
 
                             composable("races") {
                                 RacesScreen(navController = navController)
+                            }
+
+                            composable("race_form") {
+                                RaceFormScreen(navController = navController)
                             }
 
                             composable("settings") {

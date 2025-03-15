@@ -33,6 +33,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetN
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.UpdateNewsUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetAllRacesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.InsertRaceUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetRacerByIdUseCase
@@ -52,7 +53,8 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmod
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.viewmodel.RacesViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.form.viewmodel.RaceFormViewModel
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.list.viewmodel.RacesViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
@@ -290,5 +292,33 @@ object DependencyProvider {
 
             return RacesViewModel(getAllRacesUseCase, savedStateHandle) as T
         }
+    }
+
+    //Viewmodel factory race form
+    val raceFormViewModelFactory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+            val context = extras[APPLICATION_KEY]?.applicationContext!!
+            val database = RacingAppDatabase.provideDatabase(context)
+
+            val raceDao = database.raceDao()
+            val countryDao = database.countryDao()
+            val countryMapper = CountryMapper()
+            val trackMapper = TrackMapper(countryMapper)
+            val raceMapper = RaceMapper(trackMapper, countryMapper)
+            val raceLocalDataSource = RaceLocalDataSource(raceDao, countryDao, raceMapper)
+            val raceRepositoryImpl = RaceRepositoryImpl(raceLocalDataSource)
+            val insertRaceUseCase = InsertRaceUseCase(raceRepositoryImpl)
+
+            val trackDao = database.trackDao()
+            val trackLocalDatasource = TrackLocalDatasource(countryDao, trackDao, trackMapper)
+            val trackRepositoryImpl = TrackRepositoryImpl(trackLocalDatasource)
+            val getAllTracksUseCase = GetAllTracksUseCase(trackRepositoryImpl)
+
+            return RaceFormViewModel(
+                insertRaceUseCase = insertRaceUseCase,
+                getTracksUseCase = getAllTracksUseCase
+            ) as T
+        }
+
     }
 }

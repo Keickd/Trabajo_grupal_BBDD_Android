@@ -6,5 +6,5 @@ data class Race(
     val id: Long = 0,
     val date: Date,
     val track_id: Long,
-    val track: Track
+    val track: Track? = null
 )

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class RaceRepositoryImpl(private val raceLocalDataSource: RaceLocalDataSource): RaceRepository {
     override suspend fun insertRace(race: Race) {
-        TODO("Not yet implemented")
+        return raceLocalDataSource.insertRace(race)
     }
 
     override suspend fun getRaceById(id: Long): Race {

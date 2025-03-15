@@ -31,7 +31,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Race
 fun RaceCard(race: Race, navController: NavController) {
     val model =
         ImageRequest.Builder(LocalContext.current)
-            .data(Uri.parse(race.track.image))
+            .data(Uri.parse(race.track?.image))
             .placeholder(R.drawable.track)
             .crossfade(true)
             .build()
@@ -55,11 +55,11 @@ fun RaceCard(race: Race, navController: NavController) {
             )
 
             Text(text = "Track:", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text(text = race.track.name, style = MaterialTheme.typography.headlineSmall)
+            Text(text = race.track?.name ?: "", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(text = "Distance:", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text(text = race.track.distance.toString(), style = MaterialTheme.typography.headlineSmall)
+            Text(text = race.track?.distance.toString(), style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(text = "Date:", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
