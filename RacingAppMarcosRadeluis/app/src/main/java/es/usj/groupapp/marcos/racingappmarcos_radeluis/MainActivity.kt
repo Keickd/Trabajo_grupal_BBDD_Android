@@ -31,24 +31,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.firebase.firestore.FirebaseFirestore
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.database.RacingAppDatabase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.view.HomeScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.home.viewmodel.HomeViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.viewmodel.RacerFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.view.NewsFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.form.viewmodel.NewsFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.view.NewsScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.news.list.viewmodel.NewsViewModel
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.view.RacesScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.racers.view.RacerFormScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.form.view.RaceFormScreen
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.list.view.RacesScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.view.SettingScreen
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.settings.viewmodel.SettingViewModelFactory
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.view.TeamFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.team.viewmodel.TeamFormViewModel
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.view.TrackFormScreen
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.tracks.viewmodel.TrackFormViewModel
 
 class MainActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +92,11 @@ class MainActivity() : ComponentActivity() {
                             }
 
                             composable("races") {
+                                RacesScreen(navController = navController)
+                            }
 
-                                RacesScreen()
+                            composable("race_form") {
+                                RaceFormScreen(navController = navController)
                             }
 
                             composable("settings") {
