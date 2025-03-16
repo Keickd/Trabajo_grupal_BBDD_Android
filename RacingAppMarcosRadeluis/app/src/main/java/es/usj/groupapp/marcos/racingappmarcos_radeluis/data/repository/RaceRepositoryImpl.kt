@@ -6,7 +6,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.RaceRep
 import kotlinx.coroutines.flow.Flow
 
 class RaceRepositoryImpl(private val raceLocalDataSource: RaceLocalDataSource): RaceRepository {
-    override suspend fun insertRace(race: Race) {
+    override suspend fun insertRace(race: Race): Long {
         return raceLocalDataSource.insertRace(race)
     }
 

@@ -6,7 +6,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.repository.RaceRep
 class InsertRaceUseCase(
     private val raceRepository: RaceRepository
 ) {
-    suspend operator fun invoke(race: Race) {
-        raceRepository.insertRace(race)
+    suspend operator fun invoke(race: Race): Long {
+        return raceRepository.insertRace(race)
     }
 }
