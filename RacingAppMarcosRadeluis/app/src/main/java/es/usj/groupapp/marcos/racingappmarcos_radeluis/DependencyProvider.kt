@@ -37,6 +37,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetN
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.UpdateNewsUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.participation.InsertParticipationUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetAllRacesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetRaceByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.InsertRaceUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
@@ -320,6 +321,7 @@ object DependencyProvider {
             val raceLocalDataSource = RaceLocalDataSource(raceDao, countryDao, raceMapper)
             val raceRepositoryImpl = RaceRepositoryImpl(raceLocalDataSource)
             val insertRaceUseCase = InsertRaceUseCase(raceRepositoryImpl)
+            val getRaceByIdUseCase = GetRaceByIdUseCase(raceRepositoryImpl)
 
             val trackDao = database.trackDao()
             val trackLocalDatasource = TrackLocalDatasource(countryDao, trackDao, trackMapper)
@@ -339,11 +341,15 @@ object DependencyProvider {
             val participationRepositoryImpl = ParticipationRepositoryImpl(participationLocalDataSource)
             val insertParticipationUseCase = InsertParticipationUseCase(participationRepositoryImpl)
 
+            val savedStateHandle = extras.createSavedStateHandle()
+
             return RaceFormViewModel(
                 insertRaceUseCase = insertRaceUseCase,
                 getTracksUseCase = getAllTracksUseCase,
                 getRacersUseCase = getAllRacersUseCase,
-                insertParticipationUseCase = insertParticipationUseCase
+                insertParticipationUseCase = insertParticipationUseCase,
+                getRaceByIdUseCase = getRaceByIdUseCase,
+                savedStateHandle = savedStateHandle
             ) as T
         }
 

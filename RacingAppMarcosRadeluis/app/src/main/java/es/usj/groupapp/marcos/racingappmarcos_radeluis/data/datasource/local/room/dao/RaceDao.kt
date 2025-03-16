@@ -18,8 +18,9 @@ interface RaceDao {
     @Query("Select * From races")
     fun getAllRaces() : Flow<List<RaceEntity>>
 
+    @Transaction
     @Query("Select * From races Where id = :id")
-    fun getRaceById(id: Long) : RaceEntity
+    suspend fun getRaceById(id: Long) : RaceFullData?
 
     @Update
     fun updateRace(raceEntity: RaceEntity)

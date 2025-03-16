@@ -96,7 +96,15 @@ class MainActivity() : ComponentActivity() {
                             }
 
                             composable("race_form") {
-                                RaceFormScreen(navController = navController)
+                                RaceFormScreen(navController = navController, raceId = null)
+                            }
+
+                            composable(
+                                route = "race_form/{raceId}",
+                                arguments = listOf(navArgument("raceId") { type = NavType.LongType })
+                            ) { backStackEntry ->
+                                val raceId = backStackEntry.arguments?.getLong("raceId") ?: 0L
+                                RaceFormScreen(navController = navController, raceId = raceId)
                             }
 
                             composable("settings") {

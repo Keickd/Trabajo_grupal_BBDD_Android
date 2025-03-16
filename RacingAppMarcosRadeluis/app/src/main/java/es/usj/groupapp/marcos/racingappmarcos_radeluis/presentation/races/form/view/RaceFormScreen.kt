@@ -55,12 +55,15 @@ import java.util.Locale
 @Composable
 fun RaceFormScreen(
     viewModel: RaceFormViewModel = viewModel(factory = DependencyProvider.raceFormViewModelFactory),
-    navController: NavController
+    navController: NavController,
+    raceId: Long?
 ) {
     val state by viewModel.state.collectAsState()
     val tracks by viewModel.tracks.collectAsState()
     val racers by viewModel.racers.collectAsState()
     val participations by viewModel.participations.collectAsState()
+    val selectedDateTime by viewModel.selectedDateTime.collectAsState()
+    val race by viewModel.race.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -77,6 +80,10 @@ fun RaceFormScreen(
         )
     }
 
+    if (raceId != null) {
+        selectedOption = tracks.find { it.id == race?.track_id } ?: selectedOption
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,8 +96,6 @@ fun RaceFormScreen(
             is RaceState.Error -> FailureComposable()
             is RaceState.Loading -> LoadingComposable()
             is RaceState.Success -> {
-
-                var selectedDateTime = remember { mutableStateOf("") }
 
                 Row(
                     modifier = Modifier
@@ -109,7 +114,7 @@ fun RaceFormScreen(
                         onClick = {
                             try {
                                 val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-                                val parsedDate = format.parse(selectedDateTime.value)
+                                val parsedDate = format.parse(selectedDateTime)
 
                                 if (parsedDate != null) {
                                     coroutineScope.launch {
@@ -134,7 +139,7 @@ fun RaceFormScreen(
                     }
                 }
 
-                DateTimePickerField(selectedDateTime = selectedDateTime)
+                DateTimePickerField(selectedDateTime = selectedDateTime, onDateSelected = { date -> viewModel.updateDate(date) })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Box(modifier = Modifier.fillMaxWidth()) {

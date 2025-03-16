@@ -10,8 +10,8 @@ class RaceRepositoryImpl(private val raceLocalDataSource: RaceLocalDataSource): 
         return raceLocalDataSource.insertRace(race)
     }
 
-    override suspend fun getRaceById(id: Long): Race {
-        TODO("Not yet implemented")
+    override suspend fun getRaceById(id: Long): Race? {
+        return raceLocalDataSource.getRaceById(id)
     }
 
     override suspend fun updateRace(race: Race) {

@@ -1,5 +1,6 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.participations
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,6 +63,7 @@ fun ParticipationList(participations: List<Participation>, racers: List<Racer>, 
         }
 
         participations.forEach { participation ->
+            Log.d("ParticipationList", "Participation: $participation")
             ParticipationItem(participation = participation)
         }
     }
