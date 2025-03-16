@@ -1,6 +1,5 @@
 package es.usj.groupapp.marcos.racingappmarcos_radeluis.presentation.races.form.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.model.Race
@@ -21,10 +20,6 @@ class RaceFormViewModel(
     private val _tracks: MutableStateFlow<List<Track>> = MutableStateFlow(emptyList())
     val tracks = _tracks
 
-
-//    private val _raceName = MutableStateFlow("")
-//    val raceName: MutableStateFlow<String> = _raceName
-
     init {
         getAllTracks()
         _state.value = RaceState.Success(null)
@@ -34,7 +29,6 @@ class RaceFormViewModel(
         viewModelScope.launch {
             try {
                 getTracksUseCase.getAllTracks().collect{ tracks ->
-                    Log.d("TrackViewModel", tracks.toString())
                     _tracks.value = tracks
                     _state.value = RaceState.Success(null)
                 }
