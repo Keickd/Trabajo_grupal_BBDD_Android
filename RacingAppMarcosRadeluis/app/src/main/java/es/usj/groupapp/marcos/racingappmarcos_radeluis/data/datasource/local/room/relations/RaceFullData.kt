@@ -1,12 +1,12 @@
-package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.local.room.relations
+package es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.relations
 
 import androidx.room.Embedded
 import androidx.room.Relation
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.ParticipationEntity
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RaceEntity
-import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.RacerEntity
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.room.entities.TrackEntity
 
-data class RaceWithParticipations(
+data class RaceFullData(
     @Embedded val raceEntity: RaceEntity,
     @Relation(
         parentColumn = "id",
@@ -14,8 +14,8 @@ data class RaceWithParticipations(
     )
     val participationEntities: List<ParticipationEntity>,
     @Relation(
-        parentColumn = "racer_id",
+        parentColumn = "track_id",
         entityColumn = "id"
     )
-    val racerEntity: RacerEntity
+    val trackEntity: TrackEntity,
 )

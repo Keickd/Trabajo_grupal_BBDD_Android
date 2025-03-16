@@ -7,11 +7,13 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.firebase.firestore.FirebaseFirestore
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.CountryLocalDataSource
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.ParticipationLocalDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.RaceLocalDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.RacerLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TeamLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.datasources.TrackLocalDatasource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.CountryMapper
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.ParticipationMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.RaceMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.RacerMapper
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.mappers.TeamMapper
@@ -20,6 +22,7 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.local.roo
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.datasource.remote.datasources.NewsDataSource
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.CountryRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.NewsRepositoryImpl
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.ParticipationRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RaceRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.RacerRepositoryImpl
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.data.repository.TeamRepositoryImpl
@@ -32,7 +35,9 @@ import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.Dele
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.GetNewsUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.news.UpdateNewsUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.participation.InsertParticipationUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetAllRacesUseCase
+import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.GetRaceByIdUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.race.InsertRaceUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.DeleteRacerUseCase
 import es.usj.groupapp.marcos.racingappmarcos_radeluis.domain.usecases.racer.GetAllRacersUseCase
@@ -284,7 +289,11 @@ object DependencyProvider {
             val countryDao = database.countryDao()
             val countryMapper = CountryMapper()
             val trackMapper = TrackMapper(countryMapper)
-            val raceMapper = RaceMapper(trackMapper, countryMapper)
+            val participationMapper = ParticipationMapper()
+            val raceMapper = RaceMapper(
+                trackMapper = trackMapper,
+                participationMapper = participationMapper
+            )
             val raceLocalDataSource = RaceLocalDataSource(raceDao, countryDao, raceMapper)
             val raceRepositoryImpl = RaceRepositoryImpl(raceLocalDataSource)
             val getAllRacesUseCase = GetAllRacesUseCase(raceRepositoryImpl)
@@ -304,19 +313,43 @@ object DependencyProvider {
             val countryDao = database.countryDao()
             val countryMapper = CountryMapper()
             val trackMapper = TrackMapper(countryMapper)
-            val raceMapper = RaceMapper(trackMapper, countryMapper)
+            val participationMapper = ParticipationMapper()
+            val raceMapper = RaceMapper(
+                trackMapper,
+                participationMapper = participationMapper
+            )
             val raceLocalDataSource = RaceLocalDataSource(raceDao, countryDao, raceMapper)
             val raceRepositoryImpl = RaceRepositoryImpl(raceLocalDataSource)
             val insertRaceUseCase = InsertRaceUseCase(raceRepositoryImpl)
+            val getRaceByIdUseCase = GetRaceByIdUseCase(raceRepositoryImpl)
 
             val trackDao = database.trackDao()
             val trackLocalDatasource = TrackLocalDatasource(countryDao, trackDao, trackMapper)
             val trackRepositoryImpl = TrackRepositoryImpl(trackLocalDatasource)
             val getAllTracksUseCase = GetAllTracksUseCase(trackRepositoryImpl)
 
+            val racerDao = database.racerDao()
+            val teamDao = database.teamDao()
+            val teamMapper = TeamMapper(countryMapper)
+            val racerMapper = RacerMapper(countryMapper, teamMapper)
+            val racerLocalDatasource = RacerLocalDatasource(racerDao, teamDao, countryDao, racerMapper)
+            val racerRepositoryImpl = RacerRepositoryImpl(racerLocalDatasource)
+            val getAllRacersUseCase = GetAllRacersUseCase(racerRepositoryImpl)
+
+            val participationDao = database.participationDao()
+            val participationLocalDataSource = ParticipationLocalDataSource(participationDao, participationMapper)
+            val participationRepositoryImpl = ParticipationRepositoryImpl(participationLocalDataSource)
+            val insertParticipationUseCase = InsertParticipationUseCase(participationRepositoryImpl)
+
+            val savedStateHandle = extras.createSavedStateHandle()
+
             return RaceFormViewModel(
                 insertRaceUseCase = insertRaceUseCase,
-                getTracksUseCase = getAllTracksUseCase
+                getTracksUseCase = getAllTracksUseCase,
+                getRacersUseCase = getAllRacersUseCase,
+                insertParticipationUseCase = insertParticipationUseCase,
+                getRaceByIdUseCase = getRaceByIdUseCase,
+                savedStateHandle = savedStateHandle
             ) as T
         }
 
